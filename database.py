@@ -25,10 +25,13 @@ def init_db():
         cursor.execute("SELECT COUNT(*) FROM rss_feeds")
         if cursor.fetchone()[0] == 0:
             default_feeds = [
-                ("https://feeds.feedburner.com/oreilly/radar", "O'Reilly Radar"),
-                ("https://rss.cnn.com/rss/edition.rss", "CNN Top Stories"),
-                ("https://feeds.bbci.co.uk/news/technology/rss.xml", "BBC Technology"),
-                ("https://techcrunch.com/feed/", "TechCrunch"),
+                ("https://www.cisa.gov/news.xml", "CISA Security Advisories"),
+                ("https://krebsonsecurity.com/feed/", "Krebs on Security"),
+                ("https://feeds.feedburner.com/TheHackersNews", "The Hacker News"),
+                ("https://www.darkreading.com/rss.xml", "Dark Reading"),
+                ("https://www.bleepingcomputer.com/feed/", "Bleeping Computer"),
+                ("https://threatpost.com/feed", "Threatpost"),
+                ("https://www.securityweek.com/feed", "Security Week"),
             ]
             
             for url, name in default_feeds:
