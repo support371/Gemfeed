@@ -99,7 +99,7 @@ async function handleGenerateSuggestion(event) {
         
         // Reset button state
         button.disabled = false;
-        button.innerHTML = '<i data-feather="zap" class="me-1"></i>Generate AI Suggestion';
+        button.innerHTML = '<i data-feather="cpu" class="me-1"></i>Generate AI Suggestion';
         feather.replace();
         
     } finally {
