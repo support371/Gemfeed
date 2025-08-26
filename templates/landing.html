@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}RSS Curation System - AI-Powered Content Automation{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="hero-section text-center py-5 mb-5" style="background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.1), rgba(var(--bs-info-rgb), 0.1)); border-radius: 15px;">
+            <div class="container">
+                <div class="mb-4">
+                    <i data-feather="rss" size="64" class="text-primary"></i>
+                </div>
+                <h1 class="display-4 fw-bold text-primary mb-3">RSS Curation System</h1>
+                <p class="lead mb-4">
+                    Automate your content curation with AI-powered RSS feed processing, 
+                    intelligent summarization, and seamless Telegram distribution.
+                </p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                        <i data-feather="layout" class="me-2"></i>
+                        Access Dashboard
+                    </a>
+                    <a href="{{ url_for('manage_feeds') }}" class="btn btn-outline-primary btn-lg">
+                        <i data-feather="settings" class="me-2"></i>
+                        Manage Feeds
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Process Flow Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="text-center mb-5">
+            <i data-feather="zap" class="me-2"></i>
+            Automated Content Processing Workflow
+        </h2>
+        
+        <div class="row g-4">
+            <!-- Step 1: RSS Collection -->
+            <div class="col-md-3">
+                <div class="card h-100 text-center border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i data-feather="rss" class="text-primary" size="24"></i>
+                            </div>
+                        </div>
+                        <h5 class="card-title">RSS Collection</h5>
+                        <p class="card-text small text-muted">
+                            Automatically fetch and parse RSS feeds from multiple sources in real-time.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 2: AI Analysis -->
+            <div class="col-md-3">
+                <div class="card h-100 text-center border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i data-feather="cpu" class="text-info" size="24"></i>
+                            </div>
+                        </div>
+                        <h5 class="card-title">AI Analysis</h5>
+                        <p class="card-text small text-muted">
+                            AI-powered content analysis, categorization, and optimization for social media.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 3: Content Review -->
+            <div class="col-md-3">
+                <div class="card h-100 text-center border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i data-feather="edit-3" class="text-warning" size="24"></i>
+                            </div>
+                        </div>
+                        <h5 class="card-title">Content Review</h5>
+                        <p class="card-text small text-muted">
+                            Manual review and approval dashboard with side-by-side comparison of original vs. AI-optimized content.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 4: Auto-Distribution -->
+            <div class="col-md-3">
+                <div class="card h-100 text-center border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i data-feather="send" class="text-success" size="24"></i>
+                            </div>
+                        </div>
+                        <h5 class="card-title">Auto-Distribution</h5>
+                        <p class="card-text small text-muted">
+                            Automatic posting to Telegram channels with proper formatting and engagement optimization.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="text-center mb-5">
+            <i data-feather="star" class="me-2"></i>
+            Key Features
+        </h2>
+        
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i data-feather="globe" class="text-primary me-3" size="24"></i>
+                            <h5 class="card-title mb-0">Multi-Source RSS Feeds</h5>
+                        </div>
+                        <p class="card-text">
+                            Support for multiple RSS feed sources with intelligent deduplication and content aggregation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i data-feather="zap" class="text-primary me-3" size="24"></i>
+                            <h5 class="card-title mb-0">AI-Powered Summarization</h5>
+                        </div>
+                        <p class="card-text">
+                            Advanced AI content processing with GPT-5 for engaging summaries optimized for social media.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i data-feather="message-circle" class="text-primary me-3" size="24"></i>
+                            <h5 class="card-title mb-0">Telegram Integration</h5>
+                        </div>
+                        <p class="card-text">
+                            Seamless Telegram bot integration with automated posting to channels and groups.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i data-feather="filter" class="text-primary me-3" size="24"></i>
+                            <h5 class="card-title mb-0">Content Filtering</h5>
+                        </div>
+                        <p class="card-text">
+                            Smart content filtering and categorization to ensure only high-quality, relevant content is shared.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i data-feather="clock" class="text-primary me-3" size="24"></i>
+                            <h5 class="card-title mb-0">Real-time Processing</h5>
+                        </div>
+                        <p class="card-text">
+                            Continuous feed monitoring with configurable refresh intervals and instant content processing.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i data-feather="bar-chart-2" class="text-primary me-3" size="24"></i>
+                            <h5 class="card-title mb-0">Analytics Dashboard</h5>
+                        </div>
+                        <p class="card-text">
+                            Comprehensive analytics and reporting on content performance and engagement metrics.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Company Info Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <h2 class="mb-4">
+                    <i data-feather="briefcase" class="me-2"></i>
+                    About This Project
+                </h2>
+                <p class="lead text-muted mb-4">
+                    This RSS Curation System is designed to streamline content management workflows 
+                    for businesses and content creators who need to efficiently process, curate, 
+                    and distribute relevant information from multiple sources.
+                </p>
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="row g-4 text-center">
+                            <div class="col-md-4">
+                                <h3 class="text-primary">100%</h3>
+                                <p class="text-muted">Automated Processing</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h3 class="text-primary">24/7</h3>
+                                <p class="text-muted">Content Monitoring</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h3 class="text-primary">AI</h3>
+                                <p class="text-muted">Powered Intelligence</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="text-center py-5">
+            <h2 class="mb-4">Ready to Automate Your Content Curation?</h2>
+            <p class="text-muted mb-4">
+                Start processing RSS feeds with AI-powered analysis and automated Telegram distribution.
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                    <i data-feather="play" class="me-2"></i>
+                    Start Curating
+                </a>
+                <a href="{{ url_for('manage_feeds') }}" class="btn btn-outline-primary btn-lg">
+                    <i data-feather="plus" class="me-2"></i>
+                    Add RSS Feeds
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

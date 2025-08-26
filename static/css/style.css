@@ -175,3 +175,61 @@ a:hover {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+/* Landing page enhancements */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.02) 30%, rgba(255, 255, 255, 0.02) 70%, transparent 70%);
+    pointer-events: none;
+}
+
+.process-step {
+    position: relative;
+}
+
+.process-step::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -20px;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--bs-primary), transparent);
+    transform: translateY(-50%);
+}
+
+.process-step:last-child::after {
+    display: none;
+}
+
+/* Feature cards animation */
+.feature-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Stats section */
+.stats-section h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+/* Enhanced button styles */
+.btn-lg {
+    padding: 12px 30px;
+    font-weight: 500;
+}
