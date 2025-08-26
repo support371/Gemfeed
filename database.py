@@ -23,7 +23,8 @@ def init_db():
         
         # Add some default RSS feeds if none exist
         cursor.execute("SELECT COUNT(*) FROM rss_feeds")
-        if cursor.fetchone()[0] == 0:
+        feed_count = cursor.fetchone()[0]
+        if feed_count == 0:
             default_feeds = [
                 ("https://www.cisa.gov/news.xml", "CISA Security Advisories"),
                 ("https://krebsonsecurity.com/feed/", "Krebs on Security"),
