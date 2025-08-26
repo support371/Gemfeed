@@ -1,0 +1,161 @@
+Flask
+feedparser
+requests
+openai
+python-dotenv
+
+import sqlite3
+
+conn = sqlite3.connect("database.db")
+cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS rss_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    summary TEXT,
+    link TEXT,
+    category TEXT,
+    date TEXT,
+    approved INTEGER DEFAULT 0
+)
+""")
+
+conn.commit()
+conn.close()
+print("Database and table created successfully.")
+
+import feedparser
+import sqlite3
+
+RSS_FEEDS = [
+    "https://example.com/rss1.xml",
+    "https://example.com/rss2.xml"
+]
+
+conn = sqlite3.connect("database.db")
+cursor = conn.cursor()
+
+for url in RSS_FEEDS:
+    feed = feedparser.parse(url)
+    for entry in feed.entries:
+        cursor.execute("""
+            INSERT INTO rss_items (title, summary, link, category, date)
+            VALUES (?, ?, ?, ?, ?)
+        """, (entry.title, entry.summary, entry.link, "Uncategorized", getattr(entry, 'published', '')))
+conn.commit()
+conn.close()
+print("RSS items fetched successfully.")
+
+import openai
+import os
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+def generate_summary(title, summary):
+    prompt = f"Rewrite this RSS feed content for Telegram in a concise, professional, engaging style:\n\nTitle: {title}\nSummary: {summary}\n\nResult:"
+    response = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=prompt,
+        max_tokens=150,
+        temperature=0.7,
+    )
+    return response.choices[0].text.strip()
+
+import requests
+import os
+
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
+def send_to_telegram(item):
+    title, summary, link = item
+    message = f"*{title}*\n\n{summary}\n\n[Read more]({link})"
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    requests.post(url, data={"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"})
+
+from flask import Flask, render_template, request, redirect
+import sqlite3
+from telegram_bot import send_to_telegram
+from ai_summary import generate_summary
+
+app = Flask(__name__)
+
+@app.route('/')
+def dashboard():
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM rss_items")
+    items = cursor.fetchall()
+    conn.close()
+
+    items_with_suggestions = []
+    for item in items:
+        if item[6] == 0:  # Not approved
+            ai_text = generate_summary(item[1], item[2])
+        else:
+            ai_text = ""
+        items_with_suggestions.append(item + (ai_text,))
+    
+    return render_template('index.html', items=items_with_suggestions)
+
+@app.route('/approve/<int:item_id>', methods=['POST'])
+def approve(item_id):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE rss_items SET approved=1 WHERE id=?", (item_id,))
+    cursor.execute("SELECT title, summary, link FROM rss_items WHERE id=?", (item_id,))
+    item = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    
+    send_to_telegram(item)
+    return redirect('/')
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=3000, debug=True)
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RSS Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        button { padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>RSS Dashboard</h1>
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Original Summary</th>
+            <th>AI Suggestion</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Approve</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td>{{ item[1] }}</td>
+            <td>{{ item[2] }}</td>
+            <td>{{ item[7] }}</td>
+            <td>{{ item[4] }}</td>
+            <td>{{ item[5] }}</td>
+            <td>
+                {% if item[6] == 0 %}
+                <form action="/approve/{{ item[0] }}" method="post">
+                    <button type="submit">Approve & Send</button>
+                </form>
+                {% else %}
+                Sent
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
