@@ -233,3 +233,45 @@ a:hover {
     padding: 12px 30px;
     font-weight: 500;
 }
+
+/* Floating animation for security elements */
+@keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(1deg); }
+    66% { transform: translateY(5px) rotate(-1deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.floating-element {
+    animation-duration: 6s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+
+/* Security-themed color overrides */
+.text-security-primary { color: #ffc107; }
+.bg-security-primary { background-color: #ffc107; }
+.border-security-primary { border-color: #ffc107; }
+
+.text-security-dark { color: #0d1421; }
+.bg-security-dark { background-color: #0d1421; }
+
+/* Newsletter card styles */
+.newsletter-feature {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.newsletter-feature:hover {
+    border-color: var(--bs-warning);
+    transform: scale(1.02);
+}
+
+/* Brand specific styling */
+.navbar-brand {
+    font-size: 1.4rem;
+}
+
+.navbar-brand .fw-bold {
+    color: var(--bs-warning);
+}
