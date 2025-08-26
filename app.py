@@ -16,6 +16,11 @@ app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-prod
 init_db()
 
 @app.route('/')
+def landing():
+    """Official landing page showcasing the RSS curation system"""
+    return render_template('landing.html')
+
+@app.route('/dashboard')
 def dashboard():
     """Main dashboard showing RSS items for review"""
     try:
