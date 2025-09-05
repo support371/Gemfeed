@@ -145,7 +145,7 @@ def reject(item_id):
 def manage_feeds():
     """RSS feed management page"""
     feeds = get_rss_feeds()
-    return render_template('feeds.html', feeds=feeds)
+    return render_template('feed.html', feeds=feeds)
 
 @app.route('/add_feed', methods=['POST'])
 def add_feed():
