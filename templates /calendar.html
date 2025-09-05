@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Calendar</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>📅 Content Calendar</h1>
+    <nav>
+      <a href="{{ url_for('landing') }}">Home</a> |
+      <a href="{{ url_for('dashboard') }}">Dashboard</a> |
+      <a href="{{ url_for('manage_feeds') }}">Feeds</a> |
+      <a href="{{ url_for('calendar_page') }}">Calendar</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>🚀 Crypto Motivation Calendar</h2>
+      <ul>
+        {% for item in crypto %}
+          <li>
+            <strong>Day {{ item.day }}</strong>: {{ item.content }} <br>
+            <em>{{ item.cta }}</em>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <hr>
+
+    <section>
+      <h2>🏡 Real Estate Newsletter</h2>
+      <ul>
+        {% for item in real_estate %}
+          <li>
+            <strong>Day {{ item.day }}</strong>: {{ item.content }} <br>
+            <em>{{ item.cta }}</em>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 GemFeed Project</p>
+  </footer>
+</body>
+</html>
