@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Landing - GemFeed{% endblock %}
+
+{% block content %}
+<section class="landing">
+    <h2>Welcome to GemFeed</h2>
+    <p>Your AI-powered RSS feed curation system.</p>
+    <a href="{{ url_for('dashboard') }}" class="btn">Go to Dashboard</a>
+</section>
+{% endblock %}
