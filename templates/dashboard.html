@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - GemFeed{% endblock %}
+
+{% block content %}
+<h2>Dashboard</h2>
+{% if items %}
+    <ul class="feed-list">
+        {% for item in items %}
+        <li>
+            <h3>{{ item['title'] }}</h3>
+            <p>{{ item['summary'] }}</p>
+            <a href="{{ item['link'] }}" target="_blank">Read more</a>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No RSS items available.</p>
+{% endif %}
+{% endblock %}
