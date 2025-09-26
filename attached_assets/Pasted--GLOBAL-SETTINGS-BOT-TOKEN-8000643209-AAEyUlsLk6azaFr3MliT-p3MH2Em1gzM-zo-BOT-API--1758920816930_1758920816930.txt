@@ -1,0 +1,71 @@
+# === GLOBAL SETTINGS ===
+BOT_TOKEN = "8000643209:AAEyUlsLk6azaFr3MliT-p3MH2Em1gzM-zo"
+BOT_API   = "https://api.telegram.org/bot" + BOT_TOKEN
+PRIVATE_CHAT_ID = "7700844581"                # archive / test chat
+GROUP_CHAT_ID   = "<INSERT_GROUP_CHAT_ID>"    # replace with your Telegram group id (-100XXXXXXXXXX)
+
+INVITE_EXPIRE_SECONDS = 604800   # 7 days
+INVITE_MEMBER_LIMIT   = 1
+RATE_LIMIT_PER_MIN    = 40       # safe cap
+RP_LOG_DESTINATION    = "GoogleSheet:<YOUR_SHEET_ID>"
+
+# === FIELD MAPPING (CSV) ===
+- name   = PRINCIPAL_NAME or (FIRST_NAME + " " + LAST_NAME)
+- email  = EMAIL
+- entity = ENTITY_NAME or ENTITY_NUM
+- region = PHYSICAL_STATE or STATE
+
+# === WORKFLOW STEPS ===
+1. Load CSV row (Principals.csv / Agents.csv).
+2. Deduplicate (skip if entity/email already processed).
+3. Create invite link:
+   POST https://api.telegram.org/bot{BOT_TOKEN}/createChatInviteLink
+   Body:
+   {
+     "chat_id": "<INSERT_GROUP_CHAT_ID>",
+     "expire_date": now + INVITE_EXPIRE_SECONDS,
+     "member_limit": INVITE_MEMBER_LIMIT,
+     "name": "Jamfreed Invite - {entity}"
+   }
+   → response.result.invite_link = unique invite
+
+4. Deliver invite:
+   - If EMAIL available → send email:
+     Subject: Invitation to join GÉM group
+     Body: "Hi {name}, join here: {invite_link}. Expires in 7 days."
+   - If TELEGRAM username/chat_id known → send DM:
+     POST /sendMessage with {chat_id, text:"Hi {name}, join here: {invite_link}"}
+
+5. Log issuance:
+   Append row to GoogleSheet/Airtable:
+   timestamp, name, email, entity, invite_link, invite_id, expire_date, channel (email|dm), status=issued
+
+6. Monitor joins:
+   Use getUpdates or webhook; check for "new_chat_members" or "via_chat_invite_link".
+   When joined → update log: status=joined, joined_timestamp.
+
+7. Rate-limit: max 40 requests/min; backoff on error 429.
+   On error 401/403 → pause and alert admin.
+
+# === SAMPLE AGENT LOOP ===
+for each contact in CSV:
+    if already_processed(contact): continue
+    invite = createInviteLink(GROUP_CHAT_ID)
+    if invite.ok:
+        if email: sendEmail(contact.email, invite.link)
+        elif username: sendMessage(username, invite.link)
+        log("issued", contact, invite.link)
+    else:
+        log("failed", contact, invite.error)
+    enforce_rate_limit()
+
+monitor_joins_and_update_log()
+
+# === RP LOG SCHEMA ===
+job_id, timestamp, name, email, entity, region, invite_link, invite_id, expire_date, delivery_channel, status (issued|delivered|joined|failed), error_text, notes
+
+# === SAFETY ===
+- Bot must be admin in target group (with invite permission).
+- Respect rate limits.
+- Use email/DM invites → never auto-add users.
+- Keep BOT_TOKEN secret.
