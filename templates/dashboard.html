@@ -39,7 +39,7 @@
             </div>
         </div>
         {% else %}
-        
+
         <!-- Items Grid -->
         <div class="row">
             {% for item in items %}
@@ -74,7 +74,7 @@
                         </span>
                         {% endif %}
                     </div>
-                    
+
                     <div class="card-body">
                         <!-- Original Summary -->
                         {% if item.summary %}
@@ -86,7 +86,7 @@
                             <p class="small text-muted">{{ item.summary[:200] }}{% if item.summary|length > 200 %}...{% endif %}</p>
                         </div>
                         {% endif %}
-                        
+
                         <!-- AI Suggestion -->
                         <div class="ai-suggestion" id="suggestion-{{ item.id }}">
                             <h6 class="text-primary mb-2">
@@ -107,7 +107,7 @@
                             {% endif %}
                         </div>
                     </div>
-                    
+
                     {% if not item.approved %}
                     <div class="card-footer bg-transparent">
                         <div class="d-flex gap-2">
@@ -129,7 +129,7 @@
             </div>
             {% endfor %}
         </div>
-        
+
         {% endif %}
     </div>
 </div>
