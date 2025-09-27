@@ -38,7 +38,11 @@
                     </div>
                 </div>
                 <div class="d-flex gap-3 justify-content-center flex-wrap">
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-warning btn-lg">
+                    <a href="{{ url_for('news') }}" class="btn btn-warning btn-lg">
+                        <i data-feather="newspaper" class="me-2"></i>
+                        Latest Security News
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-lg">
                         <i data-feather="eye" class="me-2"></i>
                         Monitor Dashboard
                     </a>

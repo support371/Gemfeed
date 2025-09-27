@@ -275,3 +275,111 @@ a:hover {
 .navbar-brand .fw-bold {
     color: var(--bs-warning);
 }
+
+/* News section specific styles */
+.news-card {
+    transition: all 0.3s ease;
+    border-radius: 10px;
+}
+
+.news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.news-card .badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.news-card .card-title a {
+    color: var(--bs-dark);
+    transition: color 0.3s ease;
+}
+
+.news-card .card-title a:hover {
+    color: var(--bs-primary);
+}
+
+/* Newsletter form styling */
+#newsletterForm {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+#newsletterForm .form-control {
+    border-radius: 8px;
+    border: 2px solid rgba(var(--bs-primary-rgb), 0.2);
+}
+
+#newsletterForm .form-control:focus {
+    border-color: var(--bs-warning);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-warning-rgb), 0.25);
+}
+
+/* Featured article styling */
+.featured-article {
+    position: relative;
+    overflow: hidden;
+}
+
+.featured-article::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--bs-danger), var(--bs-warning), var(--bs-success));
+}
+
+/* Category cards hover effect */
+.card.border-danger:hover,
+.card.border-warning:hover,
+.card.border-info:hover,
+.card.border-success:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+/* Responsive news grid */
+@media (max-width: 768px) {
+    .news-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    #newsletterForm {
+        padding: 1.5rem;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+}
+
+/* Loading states for news */
+.news-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.news-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--bs-primary);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
