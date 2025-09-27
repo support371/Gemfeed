@@ -6,6 +6,11 @@ from rss_parser import parse_feeds, get_rss_feeds, add_rss_feed, remove_rss_feed
 from ai_summary import generate_summary
 from telegram_bot import send_to_telegram
 
+# --- New imports for invitation system ---
+from inviter.telegram_client import TelegramClient
+from inviter.config import validate_config
+# --- End new imports ---
+
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -26,7 +31,7 @@ def dashboard():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        
+
         # Get all RSS items, ordered by date (newest first)
         cursor.execute("""
             SELECT id, title, summary, link, category, date, approved, ai_suggestion, feed_source
@@ -35,7 +40,7 @@ def dashboard():
         """)
         items = cursor.fetchall()
         conn.close()
-        
+
         # Convert to list of dicts for easier template handling
         items_list = []
         for item in items:
@@ -50,7 +55,7 @@ def dashboard():
                 'ai_suggestion': item[7],
                 'feed_source': item[8]
             })
-        
+
         return render_template('dashboard.html', items=items_list)
     except Exception as e:
         logging.error(f"Error in dashboard: {e}")
@@ -63,24 +68,24 @@ def generate_suggestion(item_id):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        
+
         # Get the item
         cursor.execute("SELECT title, summary FROM rss_items WHERE id = ?", (item_id,))
         item = cursor.fetchone()
-        
+
         if not item:
             return jsonify({'error': 'Item not found'}), 404
-        
+
         # Generate AI suggestion
         ai_text = generate_summary(item[0], item[1])
-        
+
         # Update the item with the suggestion
         cursor.execute("""
             UPDATE rss_items SET ai_suggestion = ? WHERE id = ?
         """, (ai_text, item_id))
         conn.commit()
         conn.close()
-        
+
         return jsonify({'suggestion': ai_text})
     except Exception as e:
         logging.error(f"Error generating suggestion: {e}")
@@ -92,24 +97,24 @@ def approve(item_id):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        
+
         # Get the item details
         cursor.execute("""
             SELECT title, summary, link, ai_suggestion 
             FROM rss_items WHERE id = ?
         """, (item_id,))
         item = cursor.fetchone()
-        
+
         if not item:
             flash('Item not found', 'danger')
             return redirect(url_for('dashboard'))
-        
+
         # Use AI suggestion if available, otherwise original summary
         content_to_send = item[3] if item[3] else item[1]
-        
+
         # Send to Telegram
         success = send_to_telegram(item[0], content_to_send, item[2])
-        
+
         if success:
             # Mark as approved
             cursor.execute("UPDATE rss_items SET approved = 1 WHERE id = ?", (item_id,))
@@ -117,7 +122,7 @@ def approve(item_id):
             flash('Item approved and sent to Telegram!', 'success')
         else:
             flash('Failed to send to Telegram', 'danger')
-        
+
         conn.close()
         return redirect(url_for('dashboard'))
     except Exception as e:
@@ -152,11 +157,11 @@ def add_feed():
     """Add a new RSS feed"""
     feed_url = request.form.get('feed_url', '').strip()
     feed_name = request.form.get('feed_name', '').strip()
-    
+
     if not feed_url:
         flash('Feed URL is required', 'danger')
         return redirect(url_for('manage_feeds'))
-    
+
     try:
         success = add_rss_feed(feed_url, feed_name)
         if success:
@@ -166,7 +171,7 @@ def add_feed():
     except Exception as e:
         logging.error(f"Error adding feed: {e}")
         flash(f'Error adding feed: {str(e)}', 'danger')
-    
+
     return redirect(url_for('manage_feeds'))
 
 @app.route('/remove_feed/<int:feed_id>', methods=['POST'])
@@ -181,7 +186,7 @@ def remove_feed(feed_id):
     except Exception as e:
         logging.error(f"Error removing feed: {e}")
         flash(f'Error removing feed: {str(e)}', 'danger')
-    
+
     return redirect(url_for('manage_feeds'))
 
 @app.route('/refresh_feeds', methods=['POST'])
@@ -193,8 +198,201 @@ def refresh_feeds():
     except Exception as e:
         logging.error(f"Error refreshing feeds: {e}")
         flash(f'Error refreshing feeds: {str(e)}', 'danger')
-    
+
     return redirect(url_for('dashboard'))
+
+@app.route('/test_telegram')
+def test_telegram():
+    """Test endpoint for Telegram integration"""
+    from telegram_bot import test_telegram_connection, send_test_message
+
+    # Test connection
+    is_connected, message = test_telegram_connection()
+
+    if is_connected:
+        # Try sending a test message
+        if send_test_message():
+            flash("✅ Telegram test successful! Check your channel for the test message.", "success")
+        else:
+            flash("⚠️ Connected to Telegram but failed to send message. Check your chat ID.", "warning")
+    else:
+        flash(f"❌ Telegram connection failed: {message}", "error")
+
+    return redirect(url_for('dashboard'))
+
+@app.route('/invitations')
+def invitations():
+    """Invitation management dashboard"""
+    # Get invitation statistics from database
+    conn = get_db_connection()
+    try:
+        # Check if invitations table exists, create if not
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS invitations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL UNIQUE,
+                entity TEXT,
+                region TEXT,
+                invite_link TEXT,
+                status TEXT DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                sent_at TIMESTAMP,
+                error_message TEXT
+            )
+        ''')
+
+        # Get recent invitations
+        recent_invites = conn.execute('''
+            SELECT * FROM invitations 
+            ORDER BY created_at DESC 
+            LIMIT 50
+        ''').fetchall()
+
+        # Get statistics
+        stats = conn.execute('''
+            SELECT 
+                COUNT(*) as total,
+                COUNT(CASE WHEN status = 'sent' THEN 1 END) as sent,
+                COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending,
+                COUNT(CASE WHEN status = 'error' THEN 1 END) as errors
+            FROM invitations
+        ''').fetchone()
+
+        conn.commit()
+    finally:
+        conn.close()
+
+    return render_template('invitations.html', 
+                         recent_invites=recent_invites,
+                         stats=stats)
+
+@app.route('/invite_single', methods=['POST'])
+def invite_single():
+    """Send single invitation"""
+    name = request.form.get('name')
+    email = request.form.get('email')
+    entity = request.form.get('entity', '')
+    region = request.form.get('region', '')
+
+    if not name or not email:
+        flash("Name and email are required", "error")
+        return redirect(url_for('invitations'))
+
+    try:
+        from inviter.invitation_manager import InvitationManager
+        
+        manager = InvitationManager()
+        
+        contact = {
+            'name': name,
+            'email': email,
+            'entity': entity,
+            'region': region
+        }
+        
+        success, message, invite_link = manager.send_single_invitation(contact)
+        
+        if success:
+            # Store in main database for dashboard display
+            conn = get_db_connection()
+            try:
+                conn.execute('''
+                    INSERT OR REPLACE INTO invitations 
+                    (name, email, entity, region, invite_link, status, sent_at) 
+                    VALUES (?, ?, ?, ?, ?, 'sent', CURRENT_TIMESTAMP)
+                ''', (name, email, entity, region, invite_link))
+                conn.commit()
+            finally:
+                conn.close()
+            
+            flash(f"✅ {message}", "success")
+        else:
+            # Store error in main database
+            conn = get_db_connection()
+            try:
+                conn.execute('''
+                    INSERT OR REPLACE INTO invitations 
+                    (name, email, entity, region, status, error_message) 
+                    VALUES (?, ?, ?, ?, 'error', ?)
+                ''', (name, email, entity, region, message))
+                conn.commit()
+            finally:
+                conn.close()
+            
+            flash(f"❌ {message}", "error")
+
+    except Exception as e:
+        flash(f"❌ Error creating invitation: {str(e)}", "error")
+
+    return redirect(url_for('invitations'))
+
+@app.route('/upload_csv', methods=['POST'])
+def upload_csv():
+    """Upload CSV file for bulk invitations"""
+    if 'csv_file' not in request.files:
+        flash('No file selected', 'error')
+        return redirect(url_for('invitations'))
+    
+    file = request.files['csv_file']
+    if file.filename == '':
+        flash('No file selected', 'error')
+        return redirect(url_for('invitations'))
+    
+    if not file.filename.endswith('.csv'):
+        flash('Please upload a CSV file', 'error')
+        return redirect(url_for('invitations'))
+    
+    try:
+        from inviter.csv_processor import CSVProcessor
+        from inviter.invitation_manager import InvitationManager
+        
+        # Process CSV file
+        processor = CSVProcessor()
+        contacts = processor.process_csv_upload(file)
+        
+        if not contacts:
+            flash('No valid contacts found in CSV file', 'warning')
+            return redirect(url_for('invitations'))
+        
+        # Start bulk invitation process
+        manager = InvitationManager()
+        result = manager.send_bulk_invitations(contacts, file.filename)
+        
+        if result['success']:
+            stats = result['stats']
+            flash(f"✅ Bulk invitation started! Processing {stats['total']} contacts. "
+                  f"Check the activity log for progress.", "success")
+        else:
+            flash(f"❌ Failed to start bulk invitations: {result.get('message', 'Unknown error')}", "error")
+    
+    except Exception as e:
+        flash(f"❌ Error processing CSV: {str(e)}", "error")
+    
+    return redirect(url_for('invitations'))
+
+@app.route('/test_inviter')
+def test_inviter():
+    """Test the invitation system configuration"""
+    if not validate_config():
+        flash("❌ Invitation system configuration incomplete. Check environment variables.", "error")
+        return redirect(url_for('invitations'))
+
+    try:
+        telegram_client = TelegramClient()
+
+        # Test bot permissions
+        success, message = telegram_client.test_bot_permissions()
+
+        if success:
+            flash(f"✅ Invitation system test passed: {message}", "success")
+        else:
+            flash(f"❌ Invitation system test failed: {message}", "error")
+
+    except Exception as e:
+        flash(f"❌ Error testing invitation system: {str(e)}", "error")
+
+    return redirect(url_for('invitations'))
 
 @app.errorhandler(404)
 def not_found_error(error):

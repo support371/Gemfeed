@@ -1,0 +1,237 @@
+
+{% extends "base.html" %}
+
+{% block title %}Invitation Management - RSS Curation System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3">
+                    <i data-feather="send" class="me-2"></i>
+                    Telegram Invitations
+                </h1>
+                <div>
+                    <a href="{{ url_for('test_inviter') }}" class="btn btn-outline-info me-2">
+                        <i data-feather="check-circle" class="me-1"></i>
+                        Test System
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                        <i data-feather="arrow-left" class="me-1"></i>
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="card-title">{{ stats.total or 0 }}</h4>
+                                    <p class="card-text">Total Invitations</p>
+                                </div>
+                                <i data-feather="users" size="32"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="card-title">{{ stats.sent or 0 }}</h4>
+                                    <p class="card-text">Successfully Sent</p>
+                                </div>
+                                <i data-feather="check-circle" size="32"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="card-title">{{ stats.pending or 0 }}</h4>
+                                    <p class="card-text">Pending</p>
+                                </div>
+                                <i data-feather="clock" size="32"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-danger text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="card-title">{{ stats.errors or 0 }}</h4>
+                                    <p class="card-text">Errors</p>
+                                </div>
+                                <i data-feather="alert-circle" size="32"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Send Single Invitation -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i data-feather="user-plus" class="me-2"></i>
+                        Send Single Invitation
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('invite_single') }}">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email Address *</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="entity" class="form-label">Organization/Entity</label>
+                                    <input type="text" class="form-control" id="entity" name="entity">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="region" class="form-label">Region/State</label>
+                                    <input type="text" class="form-control" id="region" name="region">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i data-feather="send" class="me-1"></i>
+                            Create & Send Invitation
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bulk CSV Upload -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i data-feather="upload" class="me-2"></i>
+                        Bulk CSV Upload
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('upload_csv') }}" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="csv_file" class="form-label">CSV File</label>
+                                    <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
+                                    <div class="form-text">
+                                        CSV should contain columns: name, email, entity, region
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-warning w-100">
+                                    <i data-feather="upload" class="me-1"></i>
+                                    Start Bulk Invitations
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="alert alert-info mt-3">
+                        <strong><i data-feather="info" class="me-1"></i> CSV Format:</strong>
+                        The system automatically detects columns. Supported field names include:
+                        <ul class="mb-0 mt-2">
+                            <li><strong>Name:</strong> PRINCIPAL_NAME, FIRST_NAME, LAST_NAME, name, full_name</li>
+                            <li><strong>Email:</strong> EMAIL, email, email_address</li>
+                            <li><strong>Entity:</strong> ENTITY_NAME, ENTITY_NUM, entity, company, organization</li>
+                            <li><strong>Region:</strong> PHYSICAL_STATE, STATE, region, state, location</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Invitations -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i data-feather="list" class="me-2"></i>
+                        Recent Invitations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_invites %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Entity</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invite in recent_invites %}
+                                <tr>
+                                    <td>{{ invite.name }}</td>
+                                    <td>{{ invite.email }}</td>
+                                    <td>{{ invite.entity or '-' }}</td>
+                                    <td>
+                                        {% if invite.status == 'sent' %}
+                                            <span class="badge bg-success">Sent</span>
+                                        {% elif invite.status == 'pending' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% elif invite.status == 'created' %}
+                                            <span class="badge bg-info">Created</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Error</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ invite.created_at }}</td>
+                                    <td>
+                                        {% if invite.invite_link %}
+                                        <a href="{{ invite.invite_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i data-feather="external-link" size="16"></i>
+                                        </a>
+                                        {% endif %}
+                                        {% if invite.error_message %}
+                                        <button class="btn btn-sm btn-outline-danger" title="{{ invite.error_message }}">
+                                            <i data-feather="alert-circle" size="16"></i>
+                                        </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i data-feather="inbox" size="48" class="mb-3 opacity-50"></i>
+                        <p>No invitations sent yet</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
