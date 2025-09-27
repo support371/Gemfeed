@@ -3,7 +3,7 @@ import logging
 
 # Bot Configuration
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-TARGET_GROUP_CHAT_ID = os.environ.get("TARGET_GROUP_CHAT_ID")  # -100XXXXXXXXXX format
+TARGET_GROUP_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "-1002646603771")  # Your GEM Security channel
 ADMIN_TELEGRAM_ID = os.environ.get("ADMIN_TELEGRAM_ID", "7700844581")  # For alerts
 
 # Rate Limiting
@@ -32,26 +32,26 @@ DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
 def validate_config():
     """Validate required configuration"""
     errors = []
-    
+
     if not TELEGRAM_BOT_TOKEN:
         errors.append("TELEGRAM_BOT_TOKEN is required")
-    
+
     if not TARGET_GROUP_CHAT_ID:
         errors.append("TARGET_GROUP_CHAT_ID is required")
-    
+
     if EMAIL_SERVICE == "sendgrid" and not SENDGRID_API_KEY:
         errors.append("SENDGRID_API_KEY is required when using SendGrid")
-    
+
     if LOGGING_SERVICE == "sheets" and not GOOGLE_SHEETS_URL:
         errors.append("GOOGLE_SHEETS_URL is required when using Google Sheets")
-    
+
     if LOGGING_SERVICE == "airtable" and (not AIRTABLE_API_KEY or not AIRTABLE_BASE_ID):
         errors.append("AIRTABLE_API_KEY and AIRTABLE_BASE_ID are required when using Airtable")
-    
+
     if errors:
         logging.error(f"Configuration errors: {', '.join(errors)}")
         return False
-    
+
     return True
 
 # CSV Field Mapping
