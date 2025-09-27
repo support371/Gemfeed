@@ -7,7 +7,8 @@ from ai_summary import generate_summary
 from telegram_bot import send_to_telegram
 
 # --- New imports for invitation system ---
-from telegram_client import TelegramClient, validate_config
+from inviter.telegram_client import TelegramClient
+from inviter.config import validate_config
 # --- End new imports ---
 
 # Configure logging
