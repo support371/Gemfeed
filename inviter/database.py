@@ -199,3 +199,153 @@ class InviteDatabase:
         
         conn.close()
         return None
+import sqlite3
+import logging
+from datetime import datetime
+from typing import List, Dict, Optional
+
+class InviteDatabase:
+    """Database handler for invitation system"""
+    
+    def __init__(self, db_path: str = "invitations.db"):
+        self.db_path = db_path
+        self.logger = logging.getLogger(__name__)
+        
+    def init_database(self):
+        """Initialize database with required tables"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            conn.execute('''
+                CREATE TABLE IF NOT EXISTS invitations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    email TEXT NOT NULL UNIQUE,
+                    entity TEXT,
+                    region TEXT,
+                    invite_link TEXT,
+                    invite_id TEXT,
+                    status TEXT DEFAULT 'pending',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    sent_at TIMESTAMP,
+                    error_message TEXT,
+                    batch_id TEXT
+                )
+            ''')
+            
+            conn.execute('''
+                CREATE TABLE IF NOT EXISTS invite_batches (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    batch_id TEXT UNIQUE NOT NULL,
+                    filename TEXT,
+                    total_contacts INTEGER,
+                    processed_contacts INTEGER DEFAULT 0,
+                    successful_invites INTEGER DEFAULT 0,
+                    failed_invites INTEGER DEFAULT 0,
+                    status TEXT DEFAULT 'processing',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    completed_at TIMESTAMP
+                )
+            ''')
+            
+            conn.commit()
+            conn.close()
+            self.logger.info("Invitation database initialized successfully")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to initialize database: {e}")
+            raise
+    
+    def log_invitation(self, contact: Dict, invite_link: str = None, 
+                      status: str = "pending", error_message: str = None,
+                      batch_id: str = None) -> bool:
+        """Log an invitation attempt"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            
+            conn.execute('''
+                INSERT OR REPLACE INTO invitations 
+                (name, email, entity, region, invite_link, status, error_message, batch_id, sent_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                contact.get('name', ''),
+                contact.get('email', ''),
+                contact.get('entity', ''),
+                contact.get('region', ''),
+                invite_link,
+                status,
+                error_message,
+                batch_id,
+                datetime.now().isoformat() if status == 'sent' else None
+            ))
+            
+            conn.commit()
+            conn.close()
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Failed to log invitation: {e}")
+            return False
+    
+    def get_invitation_stats(self) -> Dict:
+        """Get invitation statistics"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            
+            stats = conn.execute('''
+                SELECT 
+                    COUNT(*) as total,
+                    COUNT(CASE WHEN status = 'sent' THEN 1 END) as sent,
+                    COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending,
+                    COUNT(CASE WHEN status = 'error' THEN 1 END) as errors
+                FROM invitations
+            ''').fetchone()
+            
+            conn.close()
+            
+            return {
+                'total': stats[0] or 0,
+                'sent': stats[1] or 0,
+                'pending': stats[2] or 0,
+                'errors': stats[3] or 0
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Failed to get stats: {e}")
+            return {'total': 0, 'sent': 0, 'pending': 0, 'errors': 0}
+    
+    def get_recent_invitations(self, limit: int = 50) -> List[Dict]:
+        """Get recent invitations"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            
+            invitations = conn.execute('''
+                SELECT * FROM invitations 
+                ORDER BY created_at DESC 
+                LIMIT ?
+            ''', (limit,)).fetchall()
+            
+            conn.close()
+            
+            # Convert to list of dicts
+            result = []
+            for inv in invitations:
+                result.append({
+                    'id': inv[0],
+                    'name': inv[1],
+                    'email': inv[2],
+                    'entity': inv[3],
+                    'region': inv[4],
+                    'invite_link': inv[5],
+                    'invite_id': inv[6],
+                    'status': inv[7],
+                    'created_at': inv[8],
+                    'sent_at': inv[9],
+                    'error_message': inv[10],
+                    'batch_id': inv[11]
+                })
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Failed to get recent invitations: {e}")
+            return []
