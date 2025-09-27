@@ -394,6 +394,170 @@ def test_inviter():
 
     return redirect(url_for('invitations'))
 
+@app.route('/news')
+def news():
+    """Enterprise news page showing approved RSS content"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Get approved RSS items for display
+        cursor.execute("""
+            SELECT id, title, summary, link, category, date, approved, ai_suggestion, feed_source
+            FROM rss_items 
+            WHERE approved = 1
+            ORDER BY date DESC, id DESC
+            LIMIT 50
+        """)
+        items = cursor.fetchall()
+
+        # Convert to list of dicts
+        approved_items = []
+        categories = {}
+        
+        for item in items:
+            item_dict = {
+                'id': item[0],
+                'title': item[1],
+                'summary': item[2],
+                'link': item[3],
+                'category': item[4] or 'General',
+                'date': item[5],
+                'approved': item[6],
+                'ai_suggestion': item[7],
+                'feed_source': item[8]
+            }
+            approved_items.append(item_dict)
+            
+            # Count categories for stats
+            category_key = item[4].lower() if item[4] else 'general'
+            if 'vulnerability' in category_key:
+                categories['vulnerability'] = categories.get('vulnerability', 0) + 1
+            elif 'threat' in category_key:
+                categories['threat'] = categories.get('threat', 0) + 1
+            elif 'trend' in category_key:
+                categories['trend'] = categories.get('trend', 0) + 1
+            elif 'tool' in category_key:
+                categories['tool'] = categories.get('tool', 0) + 1
+
+        conn.close()
+        
+        return render_template('news.html', 
+                             approved_items=approved_items, 
+                             categories=categories)
+    except Exception as e:
+        logging.error(f"Error in news page: {e}")
+        flash(f"Error loading news: {str(e)}", 'danger')
+        return render_template('news.html', approved_items=[], categories={})
+
+@app.route('/subscribe_newsletter', methods=['POST'])
+def subscribe_newsletter():
+    """Handle newsletter subscription"""
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip()
+    entity = request.form.get('entity', '').strip()
+
+    if not name or not email:
+        return jsonify({'success': False, 'message': 'Name and email are required'})
+
+    try:
+        from inviter.invitation_manager import InvitationManager
+        
+        manager = InvitationManager()
+        
+        contact = {
+            'name': name,
+            'email': email,
+            'entity': entity or 'Newsletter Subscriber',
+            'region': 'Web Subscription'
+        }
+        
+        success, message, invite_link = manager.send_single_invitation(contact)
+        
+        if success:
+            # Store in main database for dashboard display
+            conn = get_db_connection()
+            try:
+                conn.execute('''
+                    INSERT OR REPLACE INTO invitations 
+                    (name, email, entity, region, invite_link, status, sent_at) 
+                    VALUES (?, ?, ?, ?, ?, 'sent', CURRENT_TIMESTAMP)
+                ''', (name, email, entity, 'Newsletter', invite_link))
+                conn.commit()
+            finally:
+                conn.close()
+            
+            return jsonify({
+                'success': True, 
+                'message': 'Successfully subscribed to GEM Security newsletter!'
+            })
+        else:
+            return jsonify({'success': False, 'message': message})
+
+    except Exception as e:
+        logging.error(f"Error in newsletter subscription: {e}")
+        return jsonify({
+            'success': False, 
+            'message': f'Subscription failed: {str(e)}'
+        })
+
+@app.route('/refresh_news')
+def refresh_news():
+    """Refresh news feed (similar to refresh_feeds but returns JSON)"""
+    try:
+        new_items = parse_feeds()
+        return jsonify({
+            'success': True, 
+            'message': f'Found {new_items} new items',
+            'new_items': new_items
+        })
+    except Exception as e:
+        logging.error(f"Error refreshing news: {e}")
+        return jsonify({
+            'success': False, 
+            'message': str(e)
+        }), 500
+
+@app.route('/api/news')
+def api_news():
+    """API endpoint for loading more news items"""
+    try:
+        offset = int(request.args.get('offset', 0))
+        limit = int(request.args.get('limit', 6))
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Get approved RSS items with pagination
+        cursor.execute("""
+            SELECT id, title, summary, link, category, date, ai_suggestion, feed_source
+            FROM rss_items 
+            WHERE approved = 1
+            ORDER BY date DESC, id DESC
+            LIMIT ? OFFSET ?
+        """, (limit, offset))
+        items = cursor.fetchall()
+        conn.close()
+
+        # Convert to list of dicts
+        items_list = []
+        for item in items:
+            items_list.append({
+                'id': item[0],
+                'title': item[1],
+                'summary': item[2],
+                'link': item[3],
+                'category': item[4] or 'General',
+                'date': item[5],
+                'ai_suggestion': item[6],
+                'feed_source': item[7]
+            })
+
+        return jsonify({'items': items_list})
+    except Exception as e:
+        logging.error(f"Error in API news: {e}")
+        return jsonify({'error': str(e)}), 500
+
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('dashboard.html', items=[]), 404
