@@ -273,59 +273,102 @@ def invite_single():
     name = request.form.get('name')
     email = request.form.get('email')
     entity = request.form.get('entity', '')
+    region = request.form.get('region', '')
 
     if not name or not email:
         flash("Name and email are required", "error")
         return redirect(url_for('invitations'))
 
-    # Validate configuration
-    if not validate_config():
-        flash("Invitation system not properly configured. Check environment variables.", "error")
-        return redirect(url_for('invitations'))
-
     try:
-        telegram_client = TelegramClient()
-
-        # Create invite link
-        success, result = telegram_client.create_invite_link(entity or name)
-
+        from inviter.invitation_manager import InvitationManager
+        
+        manager = InvitationManager()
+        
+        contact = {
+            'name': name,
+            'email': email,
+            'entity': entity,
+            'region': region
+        }
+        
+        success, message, invite_link = manager.send_single_invitation(contact)
+        
         if success:
-            invite_link = result.get('invite_link')
-
-            # Store in database
+            # Store in main database for dashboard display
             conn = get_db_connection()
             try:
                 conn.execute('''
                     INSERT OR REPLACE INTO invitations 
-                    (name, email, entity, invite_link, status) 
-                    VALUES (?, ?, ?, ?, 'created')
-                ''', (name, email, entity, invite_link))
+                    (name, email, entity, region, invite_link, status, sent_at) 
+                    VALUES (?, ?, ?, ?, ?, 'sent', CURRENT_TIMESTAMP)
+                ''', (name, email, entity, region, invite_link))
                 conn.commit()
             finally:
                 conn.close()
-
-            # Send email (you'll need to implement email sending)
-            flash(f"✅ Invitation created for {name}. Link: {invite_link}", "success")
+            
+            flash(f"✅ {message}", "success")
         else:
-            error_msg = result.get('description', 'Unknown error')
-
-            # Store error in database
+            # Store error in main database
             conn = get_db_connection()
             try:
                 conn.execute('''
                     INSERT OR REPLACE INTO invitations 
-                    (name, email, entity, status, error_message) 
-                    VALUES (?, ?, ?, 'error', ?)
-                ''', (name, email, entity, error_msg))
+                    (name, email, entity, region, status, error_message) 
+                    VALUES (?, ?, ?, ?, 'error', ?)
+                ''', (name, email, entity, region, message))
                 conn.commit()
             finally:
                 conn.close()
-
-            flash(f"❌ Failed to create invitation: {error_msg}", "error")
+            
+            flash(f"❌ {message}", "error")
 
     except Exception as e:
         flash(f"❌ Error creating invitation: {str(e)}", "error")
 
+    return redirect(url_for('invitations'))
+
+@app.route('/upload_csv', methods=['POST'])
+def upload_csv():
+    """Upload CSV file for bulk invitations"""
+    if 'csv_file' not in request.files:
+        flash('No file selected', 'error')
+        return redirect(url_for('invitations'))
+    
+    file = request.files['csv_file']
+    if file.filename == '':
+        flash('No file selected', 'error')
+        return redirect(url_for('invitations'))
+    
+    if not file.filename.endswith('.csv'):
+        flash('Please upload a CSV file', 'error')
+        return redirect(url_for('invitations'))
+    
+    try:
+        from inviter.csv_processor import CSVProcessor
+        from inviter.invitation_manager import InvitationManager
+        
+        # Process CSV file
+        processor = CSVProcessor()
+        contacts = processor.process_csv_upload(file)
+        
+        if not contacts:
+            flash('No valid contacts found in CSV file', 'warning')
+            return redirect(url_for('invitations'))
+        
+        # Start bulk invitation process
+        manager = InvitationManager()
+        result = manager.send_bulk_invitations(contacts, file.filename)
+        
+        if result['success']:
+            stats = result['stats']
+            flash(f"✅ Bulk invitation started! Processing {stats['total']} contacts. "
+                  f"Check the activity log for progress.", "success")
+        else:
+            flash(f"❌ Failed to start bulk invitations: {result.get('message', 'Unknown error')}", "error")
+    
+    except Exception as e:
+        flash(f"❌ Error processing CSV: {str(e)}", "error")
+    
     return redirect(url_for('invitations'))
 
 @app.route('/test_inviter')
