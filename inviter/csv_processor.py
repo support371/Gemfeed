@@ -160,3 +160,109 @@ class CSVProcessor:
                     detected[field_type].append(columns[idx])
         
         return detected
+import csv
+import io
+import logging
+from typing import List, Dict, Optional
+from .config import CSV_FIELD_MAPPING
+
+class CSVProcessor:
+    """Handles CSV file processing for bulk invitations"""
+    
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+    
+    def process_csv_upload(self, file) -> List[Dict]:
+        """Process uploaded CSV file and extract contact information"""
+        contacts = []
+        
+        try:
+            # Read file content
+            file_content = file.read().decode('utf-8')
+            file.seek(0)  # Reset file pointer
+            
+            # Parse CSV
+            csv_reader = csv.DictReader(io.StringIO(file_content))
+            
+            for row_num, row in enumerate(csv_reader, 1):
+                try:
+                    contact = self._extract_contact_from_row(row)
+                    if contact and contact.get('email'):
+                        contacts.append(contact)
+                        
+                except Exception as e:
+                    self.logger.warning(f"Error processing row {row_num}: {e}")
+                    continue
+            
+            self.logger.info(f"Successfully processed {len(contacts)} contacts from CSV")
+            return contacts
+            
+        except Exception as e:
+            self.logger.error(f"Error processing CSV file: {e}")
+            return []
+    
+    def _extract_contact_from_row(self, row: Dict) -> Optional[Dict]:
+        """Extract contact information from CSV row"""
+        contact = {}
+        
+        # Map CSV fields to contact fields
+        for contact_field, csv_fields in CSV_FIELD_MAPPING.items():
+            value = None
+            
+            # Try each possible CSV field name
+            for csv_field in csv_fields:
+                if csv_field in row and row[csv_field]:
+                    value = row[csv_field].strip()
+                    break
+            
+            if value:
+                contact[contact_field] = value
+        
+        # Handle special cases
+        if 'name' not in contact:
+            # Try to construct name from first/last
+            first_name = ''
+            last_name = ''
+            
+            for field in row:
+                if 'FIRST' in field.upper():
+                    first_name = row[field].strip()
+                elif 'LAST' in field.upper():
+                    last_name = row[field].strip()
+            
+            if first_name or last_name:
+                contact['name'] = f"{first_name} {last_name}".strip()
+        
+        # Validate required fields
+        if not contact.get('email'):
+            return None
+        
+        # Set defaults
+        if not contact.get('name'):
+            contact['name'] = contact['email'].split('@')[0].title()
+        
+        return contact
+    
+    def validate_csv_format(self, file) -> Tuple[bool, str, List[str]]:
+        """Validate CSV format and return available fields"""
+        try:
+            file_content = file.read().decode('utf-8')
+            file.seek(0)  # Reset file pointer
+            
+            csv_reader = csv.DictReader(io.StringIO(file_content))
+            fieldnames = csv_reader.fieldnames or []
+            
+            # Check if we can find required fields
+            found_email = False
+            for field in fieldnames:
+                if any(email_field in field.upper() for email_field in CSV_FIELD_MAPPING['email']):
+                    found_email = True
+                    break
+            
+            if not found_email:
+                return False, "No email field found in CSV", fieldnames
+            
+            return True, "CSV format is valid", fieldnames
+            
+        except Exception as e:
+            return False, f"Error validating CSV: {str(e)}", []
