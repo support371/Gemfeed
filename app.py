@@ -439,6 +439,11 @@ def project_overview():
     """Project overview page for Telegram Bot Automation & Channel Growth System"""
     return render_template('project_overview.html')
 
+@app.route('/gem-assist')
+def gem_assist():
+    """GEM Assist features and information page"""
+    return render_template('gem_assist.html')
+
 @app.route('/news')
 def news():
     """Enterprise news page showing approved RSS content"""

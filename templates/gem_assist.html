@@ -1,0 +1,168 @@
+
+{% extends "base.html" %}
+
+{% block title %}GEM Assist - Real-time News Intelligence{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="hero-section text-center py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0d1421 0%, #1a2332 50%, #2d3748 100%); border-radius: 15px;">
+            <div class="container position-relative" style="z-index: 2;">
+                <div class="mb-4">
+                    <div class="d-flex justify-content-center align-items-center mb-3">
+                        <div class="p-4 bg-warning bg-opacity-25 rounded-circle me-3">
+                            <i data-feather="zap" size="56" class="text-warning"></i>
+                        </div>
+                        <div class="text-start">
+                            <h1 class="display-4 fw-bold text-white mb-0">GEM Assist</h1>
+                            <p class="text-warning mb-0">Real-time News Intelligence Platform</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="lead text-light mb-4">
+                    Powered by Newsdata.io API - Delivering global cybersecurity, technology, and business intelligence
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Grid -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="text-center mb-4">
+            <i data-feather="star" class="me-2 text-warning"></i>
+            GEM Assist Features
+        </h2>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100 border-0 shadow-lg">
+            <div class="card-body text-center p-4">
+                <div class="mb-3">
+                    <i data-feather="globe" class="text-info" size="48"></i>
+                </div>
+                <h4 class="card-title">Global News Coverage</h4>
+                <p class="card-text">
+                    Access news from USA, UK, Canada, and Australia with real-time updates from Newsdata.io's premium API.
+                </p>
+                <div class="badge bg-info">Multi-country Support</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100 border-0 shadow-lg">
+            <div class="card-body text-center p-4">
+                <div class="mb-3">
+                    <i data-feather="filter" class="text-warning" size="48"></i>
+                </div>
+                <h4 class="card-title">Smart Categorization</h4>
+                <p class="card-text">
+                    Automatically categorizes content into cybersecurity, threats, AI, and technology topics for easy filtering.
+                </p>
+                <div class="badge bg-warning text-dark">AI-Powered</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100 border-0 shadow-lg">
+            <div class="card-body text-center p-4">
+                <div class="mb-3">
+                    <i data-feather="send" class="text-success" size="48"></i>
+                </div>
+                <h4 class="card-title">Telegram Integration</h4>
+                <p class="card-text">
+                    Curated news delivered directly to your Telegram channel for instant notifications and team collaboration.
+                </p>
+                <div class="badge bg-success">Instant Delivery</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="text-center mb-4">
+            <i data-feather="cpu" class="me-2 text-warning"></i>
+            How GEM Assist Works
+        </h2>
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <div class="text-center">
+                    <div class="badge bg-primary rounded-circle p-3 mb-3" style="width: 60px; height: 60px; font-size: 24px;">1</div>
+                    <h5>Fetch</h5>
+                    <p class="small text-muted">Newsdata.io API retrieves latest articles matching our security topics</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="text-center">
+                    <div class="badge bg-info rounded-circle p-3 mb-3" style="width: 60px; height: 60px; font-size: 24px;">2</div>
+                    <h5>Analyze</h5>
+                    <p class="small text-muted">AI processes and categorizes content for relevance and importance</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="text-center">
+                    <div class="badge bg-warning rounded-circle p-3 mb-3" style="width: 60px; height: 60px; font-size: 24px;">3</div>
+                    <h5>Curate</h5>
+                    <p class="small text-muted">Expert review ensures quality and accuracy before publication</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="text-center">
+                    <div class="badge bg-success rounded-circle p-3 mb-3" style="width: 60px; height: 60px; font-size: 24px;">4</div>
+                    <h5>Deliver</h5>
+                    <p class="small text-muted">Published to Telegram channel and website for subscribers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- API Status -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card border-0 shadow-lg bg-light">
+            <div class="card-body text-center p-4">
+                <h3 class="mb-3">
+                    <i data-feather="activity" class="me-2 text-success"></i>
+                    GEM Assist API Status
+                </h3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2 class="text-success">
+                            <i data-feather="check-circle" size="32"></i>
+                        </h2>
+                        <p class="mb-0">API Connected</p>
+                        <small class="text-muted">Newsdata.io Active</small>
+                    </div>
+                    <div class="col-md-4">
+                        <h2 class="text-info">~100</h2>
+                        <p class="mb-0">Daily Articles</p>
+                        <small class="text-muted">Fresh content every day</small>
+                    </div>
+                    <div class="col-md-4">
+                        <h2 class="text-warning">4</h2>
+                        <p class="mb-0">Countries</p>
+                        <small class="text-muted">Global coverage</small>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-warning btn-lg me-2">
+                        <i data-feather="eye" class="me-2"></i>
+                        View Dashboard
+                    </a>
+                    <a href="{{ url_for('news') }}" class="btn btn-outline-primary btn-lg">
+                        <i data-feather="file-text" class="me-2"></i>
+                        Read Latest News
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
