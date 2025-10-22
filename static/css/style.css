@@ -85,7 +85,7 @@ footer {
     .card-body {
         padding: 1rem;
     }
-    
+
     .btn-group-vertical .btn {
         margin-bottom: 0.25rem;
     }
@@ -349,11 +349,11 @@ a:hover {
     .news-card {
         margin-bottom: 1.5rem;
     }
-    
+
     #newsletterForm {
         padding: 1.5rem;
     }
-    
+
     .hero-section h1 {
         font-size: 2rem;
     }
@@ -382,4 +382,117 @@ a:hover {
 @keyframes spin {
     0% { transform: translate(-50%, -50%) rotate(0deg); }
     100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Dashboard enhancements */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* GEM Dashboard Branding */
+.dashboard-hero {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.service-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Professional News Preview Cards */
+.news-preview-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.news-preview-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2) !important;
+}
+
+.news-image-header {
+    position: relative;
+    overflow: hidden;
+}
+
+.news-image-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+    pointer-events: none;
+}
+
+.news-preview-card .card-title a {
+    transition: color 0.3s ease;
+}
+
+.news-preview-card .card-title a:hover {
+    color: var(--bs-warning) !important;
+    text-decoration: none;
+}
+
+/* AI Insight Styling */
+.ai-insight .alert {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.08), rgba(13, 202, 240, 0.08));
+    border-left: 3px solid var(--bs-info);
+}
+
+/* Professional gradient backgrounds */
+.bg-gradient {
+    position: relative;
+    overflow: hidden;
+}
+
+.bg-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Status badges enhancement */
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 0.5em 0.8em;
+}
+
+/* Responsive news grid */
+@media (max-width: 768px) {
+    .news-preview-card {
+        margin-bottom: 1.5rem;
+    }
+
+    .dashboard-hero {
+        padding: 2rem !important;
+    }
+
+    .news-image-header {
+        height: 140px !important;
+    }
 }
