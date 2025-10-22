@@ -92,18 +92,18 @@ class NewsdataAPI:
                     if isinstance(categories, list) and categories:
                         category = categories[0].title()
                 
-                # Get source name - brand as GEM Assist
-                source = article.get('source_id', 'Global News')
+                # Brand as GEM Assist - all sources
+                source = article.get('source_id', 'Intelligence Network')
                 
                 # Skip if essential fields are missing
                 if not title or not link:
                     continue
                 
-                # Try to insert the item - branded as GEM Assist
+                # All content branded as GEM Assist
                 cursor.execute("""
                     INSERT INTO rss_items (title, summary, link, category, date, feed_source)
                     VALUES (?, ?, ?, ?, ?, ?)
-                """, (title, description, link, category, pub_date, f"GEM Assist - {source}"))
+                """, (title, description, link, category, pub_date, "GEM Assist"))
                 
                 new_items += 1
                 logging.debug(f"Added article: {title}")
