@@ -191,10 +191,20 @@ def remove_feed(feed_id):
 
 @app.route('/refresh_feeds', methods=['POST'])
 def refresh_feeds():
-    """Manually refresh all RSS feeds"""
+    """Manually refresh all RSS feeds and Newsdata.io"""
     try:
+        # Refresh RSS feeds
         new_items = parse_feeds()
-        flash(f'Feeds refreshed! Found {new_items} new items.', 'success')
+        
+        # Import from Newsdata.io
+        from newsdata_api import NewsdataAPI
+        newsdata = NewsdataAPI()
+        conn = get_db_connection()
+        newsdata_items = newsdata.import_to_database(conn)
+        conn.close()
+        
+        total_items = new_items + newsdata_items
+        flash(f'Feeds refreshed! Found {new_items} RSS items and {newsdata_items} Newsdata.io articles. Total: {total_items} new items.', 'success')
     except Exception as e:
         logging.error(f"Error refreshing feeds: {e}")
         flash(f'Error refreshing feeds: {str(e)}', 'danger')
@@ -299,6 +309,36 @@ def invite_single():
             try:
                 conn.execute('''
                     INSERT OR REPLACE INTO invitations 
+
+
+@app.route('/get-live-news')
+def get_live_news():
+    """API endpoint for fetching live news from Newsdata.io"""
+    try:
+        from newsdata_api import NewsdataAPI
+        
+        newsdata = NewsdataAPI()
+        articles = newsdata.fetch_cybersecurity_news()
+        
+        if articles:
+            return jsonify({
+                'status': 'success',
+                'totalResults': len(articles),
+                'results': articles
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'No articles found or API error'
+            }), 500
+            
+    except Exception as e:
+        logging.error(f"Error in get-live-news endpoint: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
                     (name, email, entity, region, invite_link, status, sent_at) 
                     VALUES (?, ?, ?, ?, ?, 'sent', CURRENT_TIMESTAMP)
                 ''', (name, email, entity, region, invite_link))
@@ -510,11 +550,24 @@ def subscribe_newsletter():
 def refresh_news():
     """Refresh news feed (similar to refresh_feeds but returns JSON)"""
     try:
+        # Refresh RSS feeds
         new_items = parse_feeds()
+        
+        # Import from Newsdata.io
+        from newsdata_api import NewsdataAPI
+        newsdata = NewsdataAPI()
+        conn = get_db_connection()
+        newsdata_items = newsdata.import_to_database(conn)
+        conn.close()
+        
+        total_items = new_items + newsdata_items
+        
         return jsonify({
             'success': True, 
-            'message': f'Found {new_items} new items',
-            'new_items': new_items
+            'message': f'Found {new_items} RSS items and {newsdata_items} Newsdata.io articles',
+            'new_items': total_items,
+            'rss_items': new_items,
+            'newsdata_items': newsdata_items
         })
     except Exception as e:
         logging.error(f"Error refreshing news: {e}")
