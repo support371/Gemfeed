@@ -394,6 +394,11 @@ def test_inviter():
 
     return redirect(url_for('invitations'))
 
+@app.route('/project')
+def project_overview():
+    """Project overview page for Telegram Bot Automation & Channel Growth System"""
+    return render_template('project_overview.html')
+
 @app.route('/news')
 def news():
     """Enterprise news page showing approved RSS content"""
