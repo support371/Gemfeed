@@ -267,7 +267,7 @@ a:hover {
     transform: scale(1.02);
 }
 
-/* Brand specific styling */
+/* GEM Assist Brand Styling */
 .navbar-brand {
     font-size: 1.4rem;
 }
@@ -275,6 +275,24 @@ a:hover {
 .navbar-brand .fw-bold {
     color: var(--bs-warning);
 }
+
+.gem-logo-container {
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+    transition: all 0.3s ease;
+}
+
+.gem-logo-container:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
+}
+
+/* GEM Assist color scheme */
+.text-gem-gold { color: #ffc107; }
+.bg-gem-gold { background-color: #ffc107; }
+.border-gem-gold { border-color: #ffc107; }
+
+.text-gem-dark { color: #0d1421; }
+.bg-gem-dark { background-color: #0d1421; }
 
 /* News section specific styles */
 .news-card {

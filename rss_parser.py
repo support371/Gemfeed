@@ -102,11 +102,11 @@ def parse_single_feed(url, feed_name):
                 if not title or not link:
                     continue
                 
-                # Try to insert the item
+                # All RSS content branded as GEM Assist
                 cursor.execute("""
                     INSERT INTO rss_items (title, summary, link, category, date, feed_source)
                     VALUES (?, ?, ?, ?, ?, ?)
-                """, (title, summary, link, category, pub_date, feed_name))
+                """, (title, summary, link, category, pub_date, "GEM Assist"))
                 
                 new_items.append(title)
                 logging.debug(f"Added item: {title}")

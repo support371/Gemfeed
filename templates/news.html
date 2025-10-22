@@ -1,35 +1,36 @@
 
 {% extends "base.html" %}
 
-{% block title %}Security News & Intelligence - GEM Security{% endblock %}
+{% block title %}GEM Assist Intelligence Newsletter{% endblock %}
 
 {% block content %}
-<!-- Enhanced News Header Section -->
+<!-- Enhanced GEM Assist Header -->
 <div class="row mb-5">
     <div class="col-12">
         <div class="hero-section text-center py-5 mb-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0d1421 0%, #1a2332 50%, #2d3748 100%); border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-            <!-- Animated background -->
+            <!-- Animated background pattern -->
             <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,193,7,0.1) 35px, rgba(255,193,7,0.1) 70px);"></div>
             
             <div class="container position-relative" style="z-index: 2;">
-                <!-- GEM Branding -->
+                <!-- GEM Assist Branding with Logo -->
                 <div class="d-flex justify-content-center align-items-center mb-4">
-                    <div class="p-3 bg-warning bg-opacity-25 rounded-3 me-3">
-                        <i data-feather="shield" size="48" class="text-warning"></i>
+                    <div class="p-4 bg-warning bg-opacity-25 rounded-3 me-3" style="box-shadow: 0 8px 25px rgba(255,193,7,0.2);">
+                        <i data-feather="shield" size="64" class="text-warning"></i>
                     </div>
                     <div class="text-start">
-                        <h1 class="display-5 fw-bold text-white mb-0">
-                            <span class="text-warning">GEM</span> Cybersecurity Newsletter
+                        <h1 class="display-3 fw-bold text-white mb-1">
+                            <span class="text-warning">GEM</span> Assist
                         </h1>
-                        <p class="text-light mb-0 opacity-75">Professional Security Intelligence Network</p>
+                        <p class="lead text-light mb-0 opacity-75">Intelligence Newsletter</p>
+                        <small class="text-warning">Powered by Advanced AI & Global Intelligence Network</small>
                     </div>
                 </div>
                 
                 <p class="lead text-light mb-4">
-                    Real-time cybersecurity intelligence curated by experts, delivered daily
+                    Curated cybersecurity intelligence from global sources, processed and verified by GEM Assist
                 </p>
                 
-                <!-- Live Stats -->
+                <!-- Live Intelligence Stats -->
                 <div class="row justify-content-center">
                     <div class="col-md-10">
                         <div class="row g-3 text-center text-light">
@@ -37,36 +38,36 @@
                                 <div class="bg-dark bg-opacity-50 p-3 rounded">
                                     <h4 class="text-warning mb-1">
                                         <i data-feather="zap" size="20" class="me-1"></i>
-                                        Real-time
-                                    </h4>
-                                    <small>Live Updates</small>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6">
-                                <div class="bg-dark bg-opacity-50 p-3 rounded">
-                                    <h4 class="text-warning mb-1">
-                                        <i data-feather="cpu" size="20" class="me-1"></i>
                                         AI-Powered
                                     </h4>
-                                    <small>Smart Curation</small>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6">
-                                <div class="bg-dark bg-opacity-50 p-3 rounded">
-                                    <h4 class="text-warning mb-1">
-                                        <i data-feather="users" size="20" class="me-1"></i>
-                                        Expert
-                                    </h4>
-                                    <small>Verified Sources</small>
+                                    <small>Smart Analysis</small>
                                 </div>
                             </div>
                             <div class="col-md-3 col-6">
                                 <div class="bg-dark bg-opacity-50 p-3 rounded">
                                     <h4 class="text-warning mb-1">
                                         <i data-feather="globe" size="20" class="me-1"></i>
-                                        Global
+                                        Multi-Source
                                     </h4>
-                                    <small>Worldwide Coverage</small>
+                                    <small>Global Coverage</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="bg-dark bg-opacity-50 p-3 rounded">
+                                    <h4 class="text-warning mb-1">
+                                        <i data-feather="check-circle" size="20" class="me-1"></i>
+                                        Verified
+                                    </h4>
+                                    <small>Expert Reviewed</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="bg-dark bg-opacity-50 p-3 rounded">
+                                    <h4 class="text-warning mb-1">
+                                        <i data-feather="clock" size="20" class="me-1"></i>
+                                        24/7
+                                    </h4>
+                                    <small>Real-time Updates</small>
                                 </div>
                             </div>
                         </div>
@@ -77,33 +78,35 @@
     </div>
 </div>
 
-<!-- Newsletter Subscription Section -->
+<!-- Newsletter Subscription CTA -->
 <div class="row mb-5">
     <div class="col-12">
-        <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, rgba(var(--bs-warning-rgb), 0.1), rgba(var(--bs-info-rgb), 0.05));">
+        <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, rgba(var(--bs-warning-rgb), 0.15), rgba(var(--bs-info-rgb), 0.1));">
             <div class="card-body text-center py-4">
+                <div class="mb-3">
+                    <i data-feather="mail" class="text-warning" size="48"></i>
+                </div>
                 <h2 class="mb-3">
-                    <i data-feather="mail" class="me-2 text-warning"></i>
-                    Subscribe to GEM Security Newsletter
+                    Subscribe to GEM Assist Intelligence Newsletter
                 </h2>
                 <p class="lead text-muted mb-4">
-                    Get daily cybersecurity intelligence delivered directly to your inbox and Telegram
+                    Receive daily cybersecurity intelligence curated by GEM Assist, delivered to your Telegram and email
                 </p>
                 
                 <div class="row justify-content-center">
                     <div class="col-lg-8">
                         <form id="newsletterForm" class="row g-3 align-items-end">
                             <div class="col-md-4">
-                                <input type="text" class="form-control" id="subscriberName" name="name" placeholder="Your Name" required>
+                                <input type="text" class="form-control form-control-lg" id="subscriberName" name="name" placeholder="Your Name" required>
                             </div>
                             <div class="col-md-4">
-                                <input type="email" class="form-control" id="subscriberEmail" name="email" placeholder="your@email.com" required>
+                                <input type="email" class="form-control form-control-lg" id="subscriberEmail" name="email" placeholder="your@email.com" required>
                             </div>
                             <div class="col-md-2">
-                                <input type="text" class="form-control" id="subscriberEntity" name="entity" placeholder="Company (Optional)">
+                                <input type="text" class="form-control form-control-lg" id="subscriberEntity" name="entity" placeholder="Company">
                             </div>
                             <div class="col-md-2">
-                                <button type="submit" class="btn btn-warning w-100">
+                                <button type="submit" class="btn btn-warning btn-lg w-100">
                                     <i data-feather="send" class="me-1"></i>
                                     Subscribe
                                 </button>
@@ -112,13 +115,13 @@
                         
                         <div class="mt-3">
                             <div class="d-flex gap-3 justify-content-center flex-wrap">
-                                <a href="https://t.me/gemCybersecurity_bot" target="_blank" class="btn btn-outline-primary">
+                                <a href="https://t.me/gemCybersecurity_bot" target="_blank" class="btn btn-outline-warning">
                                     <i data-feather="message-circle" class="me-1"></i>
-                                    Join Telegram Channel
+                                    Join GEM Telegram Channel
                                 </a>
                                 <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
                                     <i data-feather="eye" class="me-1"></i>
-                                    View Intelligence Dashboard
+                                    View Content Dashboard
                                 </a>
                             </div>
                         </div>
@@ -129,17 +132,23 @@
     </div>
 </div>
 
-<!-- Live News Feed -->
+<!-- GEM Assist Intelligence Feed -->
 <div class="row mb-5">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>
-                <i data-feather="rss" class="me-2 text-info"></i>
-                Latest Security Intelligence
-            </h2>
-            <div class="d-flex gap-2">
-                <span class="badge bg-success">{{ approved_items|length }} articles</span>
-                <button onclick="refreshNews()" class="btn btn-sm btn-outline-primary">
+            <div>
+                <h2>
+                    <i data-feather="file-text" class="me-2 text-warning"></i>
+                    GEM Assist Intelligence Feed
+                </h2>
+                <p class="text-muted mb-0">
+                    <i data-feather="shield" size="14" class="me-1"></i>
+                    All content processed and verified by GEM Assist
+                </p>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <span class="badge bg-success">{{ approved_items|length }} Published Articles</span>
+                <button id="refreshBtn" class="btn btn-sm btn-outline-warning">
                     <i data-feather="refresh-cw" class="me-1"></i>
                     Refresh
                 </button>
@@ -147,148 +156,173 @@
         </div>
 
         {% if approved_items %}
-        <!-- Featured Article -->
+        <!-- Featured Article with GEM Branding -->
         {% set featured = approved_items[0] %}
-        <div class="card mb-4 border-0 shadow-lg">
+        <div class="card mb-4 border-0 shadow-lg" style="border-top: 4px solid #ffc107 !important;">
+            <div class="card-header bg-dark text-white py-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <i data-feather="shield" class="text-warning me-2" size="24"></i>
+                        <span class="fw-bold text-warning">GEM ASSIST</span>
+                        <span class="mx-2">|</span>
+                        <span class="badge bg-danger">FEATURED INTELLIGENCE</span>
+                    </div>
+                    <small class="text-light opacity-75">{{ featured.date }}</small>
+                </div>
+            </div>
             <div class="row g-0">
                 <div class="col-md-8">
                     <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-2">
-                            <span class="badge bg-danger me-2">FEATURED</span>
-                            <small class="text-muted">{{ featured.feed_source }}</small>
-                        </div>
-                        <h3 class="card-title">
-                            <a href="{{ featured.link }}" target="_blank" class="text-decoration-none">
+                        <h3 class="card-title mb-3">
+                            <a href="{{ featured.link }}" target="_blank" class="text-decoration-none text-dark">
                                 {{ featured.title }}
                             </a>
                         </h3>
-                        <p class="card-text">
-                            {{ (featured.ai_suggestion or featured.summary)[:200] }}...
+                        <div class="mb-3">
+                            <span class="badge bg-{{ 'danger' if 'vulnerability' in featured.category.lower() else 'info' if 'threat' in featured.category.lower() else 'warning' }} me-2">
+                                {{ featured.category }}
+                            </span>
+                        </div>
+                        <p class="card-text lead">
+                            {{ (featured.ai_suggestion or featured.summary)[:300] }}...
                         </p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                                <i data-feather="calendar" class="me-1" size="14"></i>
-                                {{ featured.date }}
-                            </small>
-                            <a href="{{ featured.link }}" target="_blank" class="btn btn-primary">
-                                Read Full Article
-                                <i data-feather="external-link" class="ms-1" size="14"></i>
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <div class="text-muted small">
+                                <i data-feather="shield" class="me-1 text-warning" size="14"></i>
+                                Verified by GEM Assist
+                            </div>
+                            <a href="{{ featured.link }}" target="_blank" class="btn btn-warning btn-lg">
+                                Read Full Intelligence Report
+                                <i data-feather="arrow-right" class="ms-1" size="18"></i>
                             </a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 d-flex align-items-center justify-content-center bg-light">
-                    <div class="text-center p-3">
-                        <i data-feather="shield-alert" size="64" class="text-warning"></i>
-                        <p class="small text-muted mt-2">Security Alert</p>
+                <div class="col-md-4 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #ffc107, #ff9800);">
+                    <div class="text-center p-4 text-white">
+                        <i data-feather="alert-triangle" size="72" class="mb-3 opacity-75"></i>
+                        <h5 class="fw-bold">Priority Alert</h5>
+                        <p class="small mb-0">GEM Assist Intelligence</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- News Grid -->
+        <!-- Intelligence Grid with GEM Branding -->
         <div class="row">
             {% for item in approved_items[1:13] %}
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card h-100 border-0 shadow-sm news-card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-2">
-                            <span class="badge bg-{{ 'danger' if 'vulnerability' in item.category.lower() else 'info' if 'threat' in item.category.lower() else 'warning' }} me-2">
+                <div class="card h-100 border-0 shadow-sm news-card position-relative" style="border-top: 3px solid #ffc107 !important;">
+                    <!-- GEM Assist Badge -->
+                    <div class="position-absolute top-0 start-0 m-3" style="z-index: 10;">
+                        <div class="d-flex align-items-center bg-dark bg-opacity-75 rounded px-2 py-1">
+                            <i data-feather="shield" class="text-warning me-1" size="14"></i>
+                            <small class="text-warning fw-bold">GEM</small>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body pt-5">
+                        <div class="d-flex gap-2 mb-2 flex-wrap">
+                            <span class="badge bg-{{ 'danger' if 'vulnerability' in item.category.lower() else 'info' if 'threat' in item.category.lower() else 'warning' }}">
                                 {{ item.category }}
                             </span>
-                            <small class="text-muted">{{ item.feed_source }}</small>
                         </div>
                         <h5 class="card-title">
-                            <a href="{{ item.link }}" target="_blank" class="text-decoration-none">
+                            <a href="{{ item.link }}" target="_blank" class="text-decoration-none text-dark">
                                 {{ item.title[:80] }}{% if item.title|length > 80 %}...{% endif %}
                             </a>
                         </h5>
                         <p class="card-text small text-muted">
-                            {{ (item.ai_suggestion or item.summary)[:120] }}...
+                            {{ (item.ai_suggestion or item.summary)[:130] }}...
                         </p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mt-3">
                             <small class="text-muted">
-                                <i data-feather="clock" class="me-1" size="12"></i>
-                                {{ item.date }}
+                                <i data-feather="calendar" class="me-1" size="12"></i>
+                                {{ item.date[:10] if item.date else 'Recent' }}
                             </small>
-                            <a href="{{ item.link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <a href="{{ item.link }}" target="_blank" class="btn btn-sm btn-outline-warning">
+                                Read More
                                 <i data-feather="arrow-right" size="14"></i>
                             </a>
                         </div>
+                    </div>
+                    <div class="card-footer bg-light border-0">
+                        <small class="text-muted">
+                            <i data-feather="check-circle" class="me-1 text-success" size="12"></i>
+                            Verified by GEM Assist
+                        </small>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
 
-        <!-- Load More Button -->
+        <!-- Load More -->
         <div class="text-center mt-4">
-            <button id="loadMoreBtn" onclick="loadMoreNews()" class="btn btn-outline-secondary btn-lg">
+            <button id="loadMoreBtn" class="btn btn-outline-warning btn-lg">
                 <i data-feather="chevron-down" class="me-2"></i>
-                Load More Articles
+                Load More Intelligence Reports
             </button>
         </div>
 
         {% else %}
-        <!-- No content message -->
+        <!-- No content message with GEM branding -->
         <div class="text-center py-5">
             <div class="mb-4">
-                <i data-feather="wifi-off" size="64" class="text-muted"></i>
+                <div class="d-inline-flex p-4 bg-warning bg-opacity-10 rounded-circle">
+                    <i data-feather="shield" size="64" class="text-warning"></i>
+                </div>
             </div>
-            <h4 class="text-muted">No Security Intelligence Available</h4>
+            <h4 class="text-muted">GEM Assist Intelligence System Updating</h4>
             <p class="text-muted">
-                Our content curation system is being updated. Please check back soon.
+                Our AI-powered content curation system is processing new intelligence. Check back soon.
             </p>
-            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-warning btn-lg">
                 <i data-feather="settings" class="me-1"></i>
-                Manage Content Sources
+                Access Content Dashboard
             </a>
         </div>
         {% endif %}
     </div>
 </div>
 
-<!-- Threat Categories Section -->
+<!-- GEM Assist Services Overview -->
 <div class="row mb-5">
     <div class="col-12">
-        <h3 class="mb-4">
-            <i data-feather="layers" class="me-2 text-warning"></i>
-            Threat Intelligence Categories
-        </h3>
-        <div class="row">
-            <div class="col-md-3 mb-3">
-                <div class="card border-danger h-100">
-                    <div class="card-body text-center">
-                        <i data-feather="alert-triangle" class="text-danger mb-2" size="32"></i>
-                        <h6>Critical Vulnerabilities</h6>
-                        <span class="badge bg-danger">{{ categories.get('vulnerability', 0) }} alerts</span>
+        <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #0d1421, #1a2332);">
+            <div class="card-body p-5 text-white">
+                <h3 class="text-center mb-4">
+                    <i data-feather="shield" class="me-2 text-warning"></i>
+                    GEM Assist Products & Services
+                </h3>
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="text-center p-3 bg-dark bg-opacity-50 rounded">
+                            <i data-feather="alert-triangle" class="text-danger mb-2" size="32"></i>
+                            <h6 class="text-warning">Threat Intelligence</h6>
+                            <small class="text-light opacity-75">Real-time threat monitoring and analysis</small>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card border-warning h-100">
-                    <div class="card-body text-center">
-                        <i data-feather="shield" class="text-warning mb-2" size="32"></i>
-                        <h6>Threat Analysis</h6>
-                        <span class="badge bg-warning">{{ categories.get('threat', 0) }} reports</span>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 bg-dark bg-opacity-50 rounded">
+                            <i data-feather="shield" class="text-info mb-2" size="32"></i>
+                            <h6 class="text-warning">Security Monitoring</h6>
+                            <small class="text-light opacity-75">24/7 cybersecurity surveillance</small>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card border-info h-100">
-                    <div class="card-body text-center">
-                        <i data-feather="trending-up" class="text-info mb-2" size="32"></i>
-                        <h6>Industry Trends</h6>
-                        <span class="badge bg-info">{{ categories.get('trend', 0) }} updates</span>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 bg-dark bg-opacity-50 rounded">
+                            <i data-feather="cpu" class="text-success mb-2" size="32"></i>
+                            <h6 class="text-warning">AI Analysis</h6>
+                            <small class="text-light opacity-75">Advanced machine learning insights</small>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card border-success h-100">
-                    <div class="card-body text-center">
-                        <i data-feather="tool" class="text-success mb-2" size="32"></i>
-                        <h6>Security Tools</h6>
-                        <span class="badge bg-success">{{ categories.get('tool', 0) }} reviews</span>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 bg-dark bg-opacity-50 rounded">
+                            <i data-feather="book" class="text-warning mb-2" size="32"></i>
+                            <h6 class="text-warning">Intelligence Reports</h6>
+                            <small class="text-light opacity-75">Curated security briefings</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -319,23 +353,19 @@ document.getElementById('newsletterForm').addEventListener('submit', async funct
         const result = await response.json();
         
         if (result.success) {
-            // Show success message
             const alert = document.createElement('div');
             alert.className = 'alert alert-success mt-3';
             alert.innerHTML = `
                 <i data-feather="check-circle" class="me-2"></i>
-                Successfully subscribed! Check your email for confirmation.
+                Welcome to GEM Assist! Check your email for confirmation.
             `;
             this.parentNode.insertBefore(alert, this.nextSibling);
             this.reset();
-            
-            // Initialize feather icons for the new alert
             feather.replace();
         } else {
             throw new Error(result.message || 'Subscription failed');
         }
     } catch (error) {
-        // Show error message
         const alert = document.createElement('div');
         alert.className = 'alert alert-danger mt-3';
         alert.innerHTML = `
@@ -343,8 +373,6 @@ document.getElementById('newsletterForm').addEventListener('submit', async funct
             ${error.message}
         `;
         this.parentNode.insertBefore(alert, this.nextSibling);
-        
-        // Initialize feather icons for the new alert
         feather.replace();
     } finally {
         submitBtn.innerHTML = originalText;
@@ -354,71 +382,70 @@ document.getElementById('newsletterForm').addEventListener('submit', async funct
 });
 
 // News refresh functionality
-async function refreshNews() {
-    const refreshBtn = document.querySelector('button[onclick="refreshNews()"]');
-    const originalText = refreshBtn.innerHTML;
+document.getElementById('refreshBtn').addEventListener('click', async function() {
+    const btn = this;
+    const originalText = btn.innerHTML;
     
-    refreshBtn.innerHTML = '<i data-feather="loader" class="me-1"></i> Refreshing...';
-    refreshBtn.disabled = true;
+    btn.innerHTML = '<i data-feather="loader" class="me-1"></i> Refreshing...';
+    btn.disabled = true;
     
     try {
         const response = await fetch('/refresh_news');
         if (response.ok) {
             location.reload();
         } else {
-            throw new Error('Failed to refresh news');
+            throw new Error('Failed to refresh');
         }
     } catch (error) {
-        console.error('Error refreshing news:', error);
-        refreshBtn.innerHTML = originalText;
-        refreshBtn.disabled = false;
+        console.error('Error:', error);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
         feather.replace();
     }
-}
+});
 
 // Load more news functionality
-let newsOffset = 13; // Starting after the first 13 items shown
+let newsOffset = 13;
 
-async function loadMoreNews() {
-    const loadMoreBtn = document.getElementById('loadMoreBtn');
-    const originalText = loadMoreBtn.innerHTML;
+document.getElementById('loadMoreBtn').addEventListener('click', async function() {
+    const btn = this;
+    const originalText = btn.innerHTML;
     
-    loadMoreBtn.innerHTML = '<i data-feather="loader" class="me-1"></i> Loading...';
-    loadMoreBtn.disabled = true;
+    btn.innerHTML = '<i data-feather="loader" class="me-1"></i> Loading...';
+    btn.disabled = true;
     
     try {
         const response = await fetch(`/api/news?offset=${newsOffset}&limit=6`);
         const data = await response.json();
         
         if (data.items && data.items.length > 0) {
-            const newsGrid = document.querySelector('.row');
+            const container = document.querySelector('.row');
+            const loadMoreContainer = btn.parentElement;
             
             data.items.forEach(item => {
-                const newsCard = createNewsCard(item);
-                newsGrid.insertBefore(newsCard, loadMoreBtn.parentNode.parentNode);
+                const col = createNewsCard(item);
+                container.insertBefore(col, loadMoreContainer);
             });
             
             newsOffset += data.items.length;
             
-            // Hide load more button if no more items
             if (data.items.length < 6) {
-                loadMoreBtn.style.display = 'none';
+                btn.style.display = 'none';
             }
         } else {
-            loadMoreBtn.style.display = 'none';
+            btn.style.display = 'none';
         }
         
         feather.replace();
     } catch (error) {
-        console.error('Error loading more news:', error);
+        console.error('Error:', error);
     } finally {
-        loadMoreBtn.innerHTML = originalText;
-        loadMoreBtn.disabled = false;
+        btn.innerHTML = originalText;
+        btn.disabled = false;
         feather.replace();
     }
-}
+});
 
-// Helper function to create news card HTML
 function createNewsCard(item) {
     const col = document.createElement('div');
     col.className = 'col-lg-4 col-md-6 mb-4';
@@ -427,29 +454,41 @@ function createNewsCard(item) {
                       item.category.toLowerCase().includes('threat') ? 'info' : 'warning';
     
     col.innerHTML = `
-        <div class="card h-100 border-0 shadow-sm news-card">
-            <div class="card-body">
-                <div class="d-flex align-items-center mb-2">
-                    <span class="badge bg-${badgeClass} me-2">${item.category}</span>
-                    <small class="text-muted">${item.feed_source}</small>
+        <div class="card h-100 border-0 shadow-sm news-card position-relative" style="border-top: 3px solid #ffc107 !important;">
+            <div class="position-absolute top-0 start-0 m-3" style="z-index: 10;">
+                <div class="d-flex align-items-center bg-dark bg-opacity-75 rounded px-2 py-1">
+                    <i data-feather="shield" class="text-warning me-1" size="14"></i>
+                    <small class="text-warning fw-bold">GEM</small>
+                </div>
+            </div>
+            <div class="card-body pt-5">
+                <div class="d-flex gap-2 mb-2 flex-wrap">
+                    <span class="badge bg-${badgeClass}">${item.category}</span>
                 </div>
                 <h5 class="card-title">
-                    <a href="${item.link}" target="_blank" class="text-decoration-none">
+                    <a href="${item.link}" target="_blank" class="text-decoration-none text-dark">
                         ${item.title.length > 80 ? item.title.substring(0, 80) + '...' : item.title}
                     </a>
                 </h5>
                 <p class="card-text small text-muted">
-                    ${(item.ai_suggestion || item.summary).substring(0, 120)}...
+                    ${(item.ai_suggestion || item.summary).substring(0, 130)}...
                 </p>
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center mt-3">
                     <small class="text-muted">
-                        <i data-feather="clock" class="me-1" size="12"></i>
-                        ${item.date}
+                        <i data-feather="calendar" class="me-1" size="12"></i>
+                        ${item.date ? item.date.substring(0, 10) : 'Recent'}
                     </small>
-                    <a href="${item.link}" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <a href="${item.link}" target="_blank" class="btn btn-sm btn-outline-warning">
+                        Read More
                         <i data-feather="arrow-right" size="14"></i>
                     </a>
                 </div>
+            </div>
+            <div class="card-footer bg-light border-0">
+                <small class="text-muted">
+                    <i data-feather="check-circle" class="me-1 text-success" size="12"></i>
+                    Verified by GEM Assist
+                </small>
             </div>
         </div>
     `;
@@ -457,7 +496,9 @@ function createNewsCard(item) {
     return col;
 }
 
-// Auto-refresh news every 5 minutes
-setInterval(refreshNews, 5 * 60 * 1000);
+// Auto-refresh every 5 minutes
+setInterval(() => {
+    document.getElementById('refreshBtn').click();
+}, 5 * 60 * 1000);
 </script>
 {% endblock %}
