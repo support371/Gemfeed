@@ -22,13 +22,14 @@ class NewsdataAPI:
             list: List of news articles or empty list on error
         """
         try:
-            # Define search query focusing on cybersecurity and related topics
-            query = "cybersecurity OR AI innovation OR Real Estate Investing OR Business management OR financial management"
+            # Shorter query to stay under 100 character limit
+            query = "cybersecurity OR threat OR security OR AI OR tech"
             
             params = {
                 'apikey': self.api_key,
                 'q': query,
-                'language': 'en'
+                'language': 'en',
+                'country': 'us,gb,ca,au'
             }
             
             logging.info(f"Fetching news from Newsdata.io with query: {query}")
@@ -91,18 +92,18 @@ class NewsdataAPI:
                     if isinstance(categories, list) and categories:
                         category = categories[0].title()
                 
-                # Get source name
-                source = article.get('source_id', 'Newsdata.io')
+                # Get source name - brand as GEM Assist
+                source = article.get('source_id', 'Global News')
                 
                 # Skip if essential fields are missing
                 if not title or not link:
                     continue
                 
-                # Try to insert the item
+                # Try to insert the item - branded as GEM Assist
                 cursor.execute("""
                     INSERT INTO rss_items (title, summary, link, category, date, feed_source)
                     VALUES (?, ?, ?, ?, ?, ?)
-                """, (title, description, link, category, pub_date, f"Newsdata.io - {source}"))
+                """, (title, description, link, category, pub_date, f"GEM Assist - {source}"))
                 
                 new_items += 1
                 logging.debug(f"Added article: {title}")
