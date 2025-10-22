@@ -37,8 +37,14 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'project_overview' %}active{% endif %}" href="{{ url_for('project_overview') }}">
+                            <i data-feather="target" class="me-1" size="16"></i>
+                            Project Overview
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('news') }}">
-                            <i data-feather="newspaper" class="me-1" size="16"></i>
+                            <i data-feather="file-text" class="me-1" size="16"></i>
                             Security News
                         </a>
                     </li>

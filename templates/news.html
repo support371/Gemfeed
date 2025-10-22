@@ -4,32 +4,70 @@
 {% block title %}Security News & Intelligence - GEM Security{% endblock %}
 
 {% block content %}
-<!-- News Header Section -->
+<!-- Enhanced News Header Section -->
 <div class="row mb-5">
     <div class="col-12">
-        <div class="hero-section text-center py-4 mb-4" style="background: linear-gradient(135deg, #0d1421 0%, #1a2332 50%, #2d3748 100%); border-radius: 15px;">
-            <div class="container">
-                <h1 class="display-5 fw-bold text-white mb-3">
-                    <i data-feather="newspaper" class="me-3 text-warning"></i>
-                    Security Intelligence News
-                </h1>
+        <div class="hero-section text-center py-5 mb-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0d1421 0%, #1a2332 50%, #2d3748 100%); border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+            <!-- Animated background -->
+            <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,193,7,0.1) 35px, rgba(255,193,7,0.1) 70px);"></div>
+            
+            <div class="container position-relative" style="z-index: 2;">
+                <!-- GEM Branding -->
+                <div class="d-flex justify-content-center align-items-center mb-4">
+                    <div class="p-3 bg-warning bg-opacity-25 rounded-3 me-3">
+                        <i data-feather="shield" size="48" class="text-warning"></i>
+                    </div>
+                    <div class="text-start">
+                        <h1 class="display-5 fw-bold text-white mb-0">
+                            <span class="text-warning">GEM</span> Cybersecurity Newsletter
+                        </h1>
+                        <p class="text-light mb-0 opacity-75">Professional Security Intelligence Network</p>
+                    </div>
+                </div>
+                
                 <p class="lead text-light mb-4">
-                    Stay ahead of cyber threats with our curated security intelligence feed
+                    Real-time cybersecurity intelligence curated by experts, delivered daily
                 </p>
+                
+                <!-- Live Stats -->
                 <div class="row justify-content-center">
-                    <div class="col-md-8">
-                        <div class="row text-center text-light">
-                            <div class="col-4">
-                                <h4 class="text-warning">Real-time</h4>
-                                <small>Threat Updates</small>
+                    <div class="col-md-10">
+                        <div class="row g-3 text-center text-light">
+                            <div class="col-md-3 col-6">
+                                <div class="bg-dark bg-opacity-50 p-3 rounded">
+                                    <h4 class="text-warning mb-1">
+                                        <i data-feather="zap" size="20" class="me-1"></i>
+                                        Real-time
+                                    </h4>
+                                    <small>Live Updates</small>
+                                </div>
                             </div>
-                            <div class="col-4">
-                                <h4 class="text-warning">AI-Curated</h4>
-                                <small>Content Analysis</small>
+                            <div class="col-md-3 col-6">
+                                <div class="bg-dark bg-opacity-50 p-3 rounded">
+                                    <h4 class="text-warning mb-1">
+                                        <i data-feather="cpu" size="20" class="me-1"></i>
+                                        AI-Powered
+                                    </h4>
+                                    <small>Smart Curation</small>
+                                </div>
                             </div>
-                            <div class="col-4">
-                                <h4 class="text-warning">Expert</h4>
-                                <small>Insights</small>
+                            <div class="col-md-3 col-6">
+                                <div class="bg-dark bg-opacity-50 p-3 rounded">
+                                    <h4 class="text-warning mb-1">
+                                        <i data-feather="users" size="20" class="me-1"></i>
+                                        Expert
+                                    </h4>
+                                    <small>Verified Sources</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="bg-dark bg-opacity-50 p-3 rounded">
+                                    <h4 class="text-warning mb-1">
+                                        <i data-feather="globe" size="20" class="me-1"></i>
+                                        Global
+                                    </h4>
+                                    <small>Worldwide Coverage</small>
+                                </div>
                             </div>
                         </div>
                     </div>

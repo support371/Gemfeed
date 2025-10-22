@@ -1,148 +1,278 @@
+
 {% extends "base.html" %}
 
-{% block title %}Dashboard - RSS Curation System{% endblock %}
+{% block title %}GEM Cybersecurity Monitoring Assist - Content Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
+<!-- Hero Header Section -->
+<div class="row mb-4">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h2">
-                <i data-feather="layout" class="me-2"></i>
-                Content Dashboard
-            </h1>
-            <div class="d-flex gap-2">
-                <span class="badge bg-secondary">{{ items|length }} items</span>
-                <span class="badge bg-warning">{{ items|selectattr("approved", "equalto", 0)|list|length }} pending</span>
+        <div class="dashboard-hero text-white p-5 rounded-3 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0d1421 0%, #1a2332 40%, #2d3748 100%);">
+            <!-- Animated background pattern -->
+            <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,193,7,0.1) 35px, rgba(255,193,7,0.1) 70px);">
             </div>
-        </div>
-
-        {% if not items %}
-        <div class="text-center py-5">
-            <div class="mb-4">
-                <i data-feather="inbox" size="64" class="text-muted"></i>
-            </div>
-            <h3 class="text-muted">No RSS items found</h3>
-            <p class="text-muted mb-4">
-                Start by adding some RSS feeds and refreshing to get content.
-            </p>
-            <div class="d-flex gap-2 justify-content-center">
-                <a href="{{ url_for('manage_feeds') }}" class="btn btn-primary">
-                    <i data-feather="plus" class="me-1"></i>
-                    Add RSS Feeds
-                </a>
-                <form action="{{ url_for('refresh_feeds') }}" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-outline-secondary">
-                        <i data-feather="refresh-cw" class="me-1"></i>
-                        Refresh Feeds
-                    </button>
-                </form>
-            </div>
-        </div>
-        {% else %}
-
-        <!-- Items Grid -->
-        <div class="row">
-            {% for item in items %}
-            <div class="col-12 col-xl-6 mb-4">
-                <div class="card h-100 {% if item.approved %}border-success{% endif %}">
-                    <div class="card-header d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <h5 class="card-title mb-1">
-                                <a href="{{ item.link }}" target="_blank" class="text-decoration-none">
-                                    {{ item.title }}
-                                </a>
-                            </h5>
-                            <div class="d-flex gap-2 flex-wrap">
-                                <small class="badge bg-secondary">{{ item.category }}</small>
-                                {% if item.feed_source %}
-                                <small class="badge bg-info">{{ item.feed_source }}</small>
-                                {% endif %}
-                                {% if item.date %}
-                                <small class="text-muted">{{ item.date[:10] }}</small>
-                                {% endif %}
+            
+            <div class="position-relative" style="z-index: 2;">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="p-3 bg-warning bg-opacity-25 rounded-3 me-3">
+                                <i data-feather="shield" class="text-warning" size="48"></i>
+                            </div>
+                            <div>
+                                <h1 class="display-5 fw-bold mb-2">
+                                    <span class="text-warning">GEM</span> Cybersecurity Monitoring Assist
+                                </h1>
+                                <p class="lead mb-0 text-light opacity-75">
+                                    Real-time Security Intelligence & Threat Analysis Dashboard
+                                </p>
                             </div>
                         </div>
-                        {% if item.approved %}
-                        <span class="badge bg-success">
-                            <i data-feather="check" size="12"></i>
-                            Sent
-                        </span>
-                        {% else %}
-                        <span class="badge bg-warning">
-                            <i data-feather="clock" size="12"></i>
-                            Pending
-                        </span>
-                        {% endif %}
                     </div>
-
-                    <div class="card-body">
-                        <!-- Original Summary -->
-                        {% if item.summary %}
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2">
-                                <i data-feather="file-text" class="me-1"></i>
-                                Original Summary
-                            </h6>
-                            <p class="small text-muted">{{ item.summary[:200] }}{% if item.summary|length > 200 %}...{% endif %}</p>
-                        </div>
-                        {% endif %}
-
-                        <!-- AI Suggestion -->
-                        <div class="ai-suggestion" id="suggestion-{{ item.id }}">
-                            <h6 class="text-primary mb-2">
-                                <i data-feather="zap" class="me-1"></i>
-                                AI Suggestion
-                            </h6>
-                            {% if item.ai_suggestion %}
-                            <div class="alert alert-info mb-3">
-                                <p class="mb-0">{{ item.ai_suggestion }}</p>
+                    <div class="col-lg-4">
+                        <div class="row g-3 text-center">
+                            <div class="col-6">
+                                <div class="bg-dark bg-opacity-50 p-3 rounded">
+                                    <h3 class="text-warning mb-1">{{ items|length }}</h3>
+                                    <small class="text-light">Total Items</small>
+                                </div>
                             </div>
-                            {% else %}
-                            <div class="text-center">
-                                <button class="btn btn-outline-primary btn-sm generate-suggestion" data-item-id="{{ item.id }}">
-                                    <i data-feather="zap" class="me-1"></i>
-                                    Generate AI Suggestion
-                                </button>
+                            <div class="col-6">
+                                <div class="bg-dark bg-opacity-50 p-3 rounded">
+                                    <h3 class="text-danger mb-1">{{ items|selectattr("approved", "equalto", 0)|list|length }}</h3>
+                                    <small class="text-light">Pending Review</small>
+                                </div>
                             </div>
-                            {% endif %}
                         </div>
                     </div>
-
-                    {% if not item.approved %}
-                    <div class="card-footer bg-transparent">
-                        <div class="d-flex gap-2">
-                            <form action="{{ url_for('approve', item_id=item.id) }}" method="post" class="flex-grow-1">
-                                <button type="submit" class="btn btn-success w-100">
-                                    <i data-feather="send" class="me-1"></i>
-                                    Approve & Send to Telegram
-                                </button>
-                            </form>
-                            <form action="{{ url_for('reject', item_id=item.id) }}" method="post">
-                                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to reject this item?')">
-                                    <i data-feather="x"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
-            {% endfor %}
         </div>
-
-        {% endif %}
     </div>
 </div>
+
+<!-- Services Overview Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-lg bg-gradient" style="background: linear-gradient(135deg, rgba(255,193,7,0.1), rgba(13,110,253,0.05));">
+            <div class="card-body p-4">
+                <h4 class="mb-4">
+                    <i data-feather="activity" class="me-2 text-warning"></i>
+                    GEM Monitoring Services
+                </h4>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="service-card p-3 h-100 bg-white rounded shadow-sm border-start border-4 border-danger">
+                            <i data-feather="alert-triangle" class="text-danger mb-2" size="24"></i>
+                            <h6 class="fw-bold">Threat Detection</h6>
+                            <small class="text-muted">Real-time vulnerability scanning</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="service-card p-3 h-100 bg-white rounded shadow-sm border-start border-4 border-warning">
+                            <i data-feather="trending-up" class="text-warning mb-2" size="24"></i>
+                            <h6 class="fw-bold">Trend Analysis</h6>
+                            <small class="text-muted">Industry security patterns</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="service-card p-3 h-100 bg-white rounded shadow-sm border-start border-4 border-info">
+                            <i data-feather="globe" class="text-info mb-2" size="24"></i>
+                            <h6 class="fw-bold">Global Intelligence</h6>
+                            <small class="text-muted">Worldwide threat monitoring</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="service-card p-3 h-100 bg-white rounded shadow-sm border-start border-4 border-success">
+                            <i data-feather="check-circle" class="text-success mb-2" size="24"></i>
+                            <h6 class="fw-bold">Compliance Updates</h6>
+                            <small class="text-muted">Regulatory compliance news</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if not items %}
+<!-- Empty State -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-lg">
+            <div class="card-body text-center py-5">
+                <div class="mb-4">
+                    <div class="d-inline-flex p-4 bg-warning bg-opacity-10 rounded-circle">
+                        <i data-feather="inbox" size="64" class="text-warning"></i>
+                    </div>
+                </div>
+                <h3 class="text-muted mb-3">No Security Intelligence Items Found</h3>
+                <p class="text-muted mb-4">
+                    Start monitoring by adding RSS feeds and refreshing to collect real-time security intelligence.
+                </p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <a href="{{ url_for('manage_feeds') }}" class="btn btn-warning btn-lg">
+                        <i data-feather="plus-circle" class="me-2"></i>
+                        Add Security Feeds
+                    </a>
+                    <form action="{{ url_for('refresh_feeds') }}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-secondary btn-lg">
+                            <i data-feather="refresh-cw" class="me-2"></i>
+                            Refresh Intelligence
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+
+<!-- Professional News Grid with Image Preview -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>
+                <i data-feather="file-text" class="me-2 text-warning"></i>
+                Security Intelligence Feed
+            </h3>
+            <div class="d-flex gap-2">
+                <span class="badge bg-success">{{ items|selectattr("approved", "equalto", 1)|list|length }} Published</span>
+                <span class="badge bg-warning text-dark">{{ items|selectattr("approved", "equalto", 0)|list|length }} Pending</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for item in items %}
+    <div class="col-lg-6 col-xl-4">
+        <div class="news-preview-card card h-100 border-0 shadow-sm {% if item.approved %}border-success border-2{% endif %} position-relative overflow-hidden">
+            <!-- Status Badge -->
+            <div class="position-absolute top-0 end-0 m-3" style="z-index: 10;">
+                {% if item.approved %}
+                <span class="badge bg-success shadow">
+                    <i data-feather="check-circle" size="14"></i>
+                    Published
+                </span>
+                {% else %}
+                <span class="badge bg-warning text-dark shadow">
+                    <i data-feather="clock" size="14"></i>
+                    Pending
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- News Image/Icon Header -->
+            <div class="news-image-header position-relative" style="height: 180px; background: linear-gradient(135deg, 
+                {% if 'vulnerability' in item.category.lower() %}#dc3545, #e35d6a
+                {% elif 'threat' in item.category.lower() %}#fd7e14, #fd9843
+                {% elif 'compliance' in item.category.lower() %}#198754, #1e9d60
+                {% else %}#0d6efd, #3d8bfd{% endif %}
+            );">
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                    <div class="text-center text-white">
+                        <i data-feather="{% if 'vulnerability' in item.category.lower() %}alert-octagon{% elif 'threat' in item.category.lower() %}shield-off{% elif 'compliance' in item.category.lower() %}check-square{% else %}shield{% endif %}" size="64" class="mb-2 opacity-75"></i>
+                        <div class="badge bg-dark bg-opacity-50 px-3 py-2">
+                            <i data-feather="tag" size="12" class="me-1"></i>
+                            {{ item.category }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Decorative pattern overlay -->
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px);"></div>
+            </div>
+
+            <div class="card-body d-flex flex-column">
+                <!-- Meta Information -->
+                <div class="d-flex gap-2 mb-2 flex-wrap">
+                    {% if item.feed_source %}
+                    <small class="badge bg-info bg-opacity-25 text-info">
+                        <i data-feather="rss" size="10" class="me-1"></i>
+                        {{ item.feed_source }}
+                    </small>
+                    {% endif %}
+                    {% if item.date %}
+                    <small class="text-muted">
+                        <i data-feather="calendar" size="10" class="me-1"></i>
+                        {{ item.date[:10] }}
+                    </small>
+                    {% endif %}
+                </div>
+
+                <!-- Title -->
+                <h5 class="card-title mb-3">
+                    <a href="{{ item.link }}" target="_blank" class="text-decoration-none text-dark">
+                        {{ item.title[:90] }}{% if item.title|length > 90 %}...{% endif %}
+                    </a>
+                </h5>
+
+                <!-- Summary/Description -->
+                {% if item.summary %}
+                <div class="mb-3 flex-grow-1">
+                    <p class="small text-muted mb-0">
+                        {{ item.summary[:150] }}{% if item.summary|length > 150 %}...{% endif %}
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- AI Suggestion Section -->
+                <div class="ai-insight mb-3" id="suggestion-{{ item.id }}">
+                    {% if item.ai_suggestion %}
+                    <div class="alert alert-info border-0 mb-0 p-2">
+                        <div class="d-flex align-items-start">
+                            <i data-feather="cpu" class="me-2 text-info flex-shrink-0 mt-1" size="16"></i>
+                            <small class="mb-0">{{ item.ai_suggestion[:120] }}{% if item.ai_suggestion|length > 120 %}...{% endif %}</small>
+                        </div>
+                    </div>
+                    {% else %}
+                    <button class="btn btn-outline-info btn-sm w-100 generate-suggestion" data-item-id="{{ item.id }}">
+                        <i data-feather="cpu" class="me-1" size="14"></i>
+                        Generate AI Analysis
+                    </button>
+                    {% endif %}
+                </div>
+
+                <!-- Action Buttons -->
+                {% if not item.approved %}
+                <div class="d-flex gap-2">
+                    <form action="{{ url_for('approve', item_id=item.id) }}" method="post" class="flex-grow-1">
+                        <button type="submit" class="btn btn-success w-100 d-flex align-items-center justify-content-center">
+                            <i data-feather="send" class="me-2" size="16"></i>
+                            Publish to Newsletter
+                        </button>
+                    </form>
+                    <form action="{{ url_for('reject', item_id=item.id) }}" method="post">
+                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Remove this intelligence item?')" title="Reject">
+                            <i data-feather="trash-2" size="16"></i>
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <a href="{{ item.link }}" target="_blank" class="btn btn-outline-primary w-100">
+                    <i data-feather="external-link" class="me-2" size="16"></i>
+                    View Full Article
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endif %}
 
 <!-- Loading Modal -->
 <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-sm modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content border-0 shadow-lg">
             <div class="modal-body text-center p-4">
-                <div class="spinner-border text-primary mb-3" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                <div class="spinner-border text-warning mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Analyzing...</span>
                 </div>
-                <p class="mb-0">Generating AI suggestion...</p>
+                <h6 class="text-muted">AI Analysis in Progress</h6>
+                <small class="text-muted">Generating security insights...</small>
             </div>
         </div>
     </div>
