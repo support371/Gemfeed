@@ -54,6 +54,12 @@
                             Manage Feeds
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'invitations' %}active{% endif %}" href="{{ url_for('invitations') }}">
+                            <i data-feather="mail" class="me-1"></i>
+                            Invitations
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="navbar-nav">
