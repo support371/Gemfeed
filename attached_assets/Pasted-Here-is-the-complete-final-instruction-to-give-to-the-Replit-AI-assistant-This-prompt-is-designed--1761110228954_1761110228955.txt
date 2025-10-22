@@ -1,0 +1,38 @@
+Here is the complete, final instruction to give to the Replit AI assistant.
+This prompt is designed to be copied and pasted exactly as it is. It is robust, secure, and includes all the specifications you provided.
+Part 1: The Instruction for the Replit AI Assistant
+Copy this entire text block and paste it directly into the Replit AI chat.
+> Hello. Please write the complete code for a Python Flask server in a file named main.py.
+> The server must do the following:
+>  * Import Flask, jsonify, os, and requests.
+>  * Initialize a new Flask app.
+>  * Securely get the API key from Replit Secrets. The secret's name must be NEWSDATA_API_KEY.
+>  * Create one single API endpoint: /get-live-news that accepts GET requests.
+>  * Inside this endpoint, first check if the NEWSDATA_API_KEY was successfully loaded from Secrets. If it was not found, return a JSON error message "API key not found" with a 500 status code.
+>  * Define the Newsdata.io API URL, which is: https://newsdata.io/api/1/news
+>  * Define the query parameters for the API request as a dictionary:
+>    * apikey: Use the secret key loaded in step 3.
+>    * q: Use this exact string: "cybersecurity OR AI innovation OR Real Estate Investing OR Business management OR financial management"
+>    * language: Use the string "en".
+>  * Use the requests library to make the GET request to the API URL with these parameters. Place this call inside a try/except block to handle any potential connection errors.
+>  * If the request is successful (has a 200 status code), take the full JSON response from Newsdata.io and return it to the client using jsonify.
+>  * If the request is not successful (any other status code) or if an exception occurs, return a JSON error message explaining the failure.
+>  * Add the standard if __name__ == '__main__': block to run the server. The server must run on host 0.0.0.0 so it is publicly accessible.
+> 
+Part 2: What You Must Do After Pasting the Prompt
+The AI will write the code, but it cannot see your private key. You must add it yourself.
+ * Wait for the AI: The AI will generate the code in the main.py file.
+ * Go to "Secrets": On the left-hand side of Replit, click the "Secrets" tab (it looks like a 🔒 lock icon).
+ * Create the Secret:
+   * In the "Key" box (the "Name" box), type:
+     NEWSDATA_API_KEY
+   * In the "Value" box, paste your API key:
+     pub_a1ed43019bd645c2975638ce795bcf5a
+ * Click the "Add secret" button.
+Part 3: Run and Get Your URL
+ * Click the big "Run" button at the top of Replit.
+ * Your server will start. A "Webview" window will open, showing a URL. This is your backend's public URL. It will look something like this:
+   https://[your-project-name].[your-username].replit.dev
+ * Your Full API URL for Bubble is:
+   https://[your-project-name].[your-username].replit.dev/get-live-news
+You will use this full URL in the Bubble API Connector on your admin_curation page.
