@@ -2,3 +2,5 @@ flask
 requests
 feedparser
 python-telegram-bot
+openai
+gunicorn
