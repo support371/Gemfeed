@@ -40,7 +40,7 @@ def generate_summary(title, summary):
         """
         
         response = openai_client.chat.completions.create(
-            model="gpt-5",
+            model="gpt-4",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=100,
             temperature=0.7,
@@ -89,7 +89,7 @@ def analyze_content(title, summary):
         """
         
         response = openai_client.chat.completions.create(
-            model="gpt-5",
+            model="gpt-4",
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
             max_tokens=150,
@@ -142,7 +142,7 @@ def generate_hashtags(title, summary, category):
         """
         
         response = openai_client.chat.completions.create(
-            model="gpt-5",
+            model="gpt-4",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=50,
             temperature=0.5,
