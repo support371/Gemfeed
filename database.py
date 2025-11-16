@@ -1,14 +1,16 @@
-import sqlite3
+import psycopg2
+import psycopg2.extras
 import os
 import logging
 from models import get_schema
 
-DATABASE_PATH = "database.db"
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_db_connection():
-    """Get a database connection with proper configuration"""
-    conn = sqlite3.connect(DATABASE_PATH)
-    conn.row_factory = sqlite3.Row  # Enable column access by name
+    """Get a PostgreSQL database connection"""
+    if not DATABASE_URL:
+        raise ValueError("DATABASE_URL environment variable is not set")
+    conn = psycopg2.connect(DATABASE_URL)
     return conn
 
 def init_db():
@@ -19,7 +21,8 @@ def init_db():
         
         # Execute schema creation
         for sql_command in get_schema():
-            cursor.execute(sql_command)
+            if sql_command.strip(): # Avoid executing empty commands
+                cursor.execute(sql_command)
         
         # Add some default RSS feeds if none exist
         cursor.execute("SELECT COUNT(*) FROM rss_feeds")
@@ -37,14 +40,17 @@ def init_db():
             
             for url, name in default_feeds:
                 try:
-                    cursor.execute("""
-                        INSERT INTO rss_feeds (url, name) VALUES (?, ?)
-                    """, (url, name))
-                except sqlite3.IntegrityError:
+                    cursor.execute(
+                        "INSERT INTO rss_feeds (url, name) VALUES (%s, %s)",
+                        (url, name)
+                    )
+                except psycopg2.IntegrityError:
                     # Feed already exists, skip
+                    conn.rollback() # Rollback the failed transaction
                     pass
         
         conn.commit()
+        cursor.close()
         conn.close()
         logging.info("Database initialized successfully")
     except Exception as e:
@@ -56,14 +62,14 @@ def cleanup_old_items(days_old=30):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("""
-            DELETE FROM rss_items 
-            WHERE approved = 1 
-            AND created_at < datetime('now', '-{} days')
-        """.format(days_old))
+        cursor.execute(
+            "DELETE FROM rss_items WHERE approved = TRUE AND created_at < NOW() - INTERVAL '%s days'",
+            (days_old,)
+        )
         
         deleted_count = cursor.rowcount
         conn.commit()
+        cursor.close()
         conn.close()
         
         if deleted_count > 0:
