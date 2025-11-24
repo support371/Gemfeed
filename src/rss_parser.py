@@ -2,7 +2,7 @@ import feedparser
 import sqlite3
 import logging
 from datetime import datetime
-from database import get_db_connection
+from .database import get_db_connection
 
 def get_rss_feeds():
     """Get all active RSS feeds from database"""
