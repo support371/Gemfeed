@@ -1,7 +1,7 @@
 import sqlite3
 import os
 import logging
-from models import get_schema
+from .models import get_schema
 
 DATABASE_PATH = "database.db"
 

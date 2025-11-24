@@ -1,10 +1,10 @@
 import os
 import logging
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-from database import init_db, get_db_connection
-from rss_parser import parse_feeds, get_rss_feeds, add_rss_feed, remove_rss_feed
-from ai_summary import generate_summary
-from telegram_bot import send_to_telegram
+from .database import init_db, get_db_connection
+from .rss_parser import parse_feeds, get_rss_feeds, add_rss_feed, remove_rss_feed
+from .ai_summary import generate_summary
+from .telegram_bot import send_to_telegram
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
