@@ -514,3 +514,55 @@ a:hover {
         height: 140px !important;
     }
 }
+
+/* Enterprise News Page Styling */
+.sticky-top {
+    position: sticky;
+    top: 20px;
+    z-index: 100;
+}
+
+.form-control:focus {
+    background-color: var(--bs-secondary) !important;
+    color: white !important;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.page-link {
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+}
+
+/* News article hover effects */
+.card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.3s ease;
+}
+
+/* Badge styling */
+.badge {
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+    letter-spacing: 0.3px;
+}
+
+/* Enhanced link styling */
+.card-body a.text-white:hover {
+    color: var(--bs-warning) !important;
+    transition: color 0.3s ease;
+}
+
+/* Status indicator animations */
+.bg-success.rounded-circle {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
