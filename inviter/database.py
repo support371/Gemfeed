@@ -114,7 +114,7 @@ class InviteDatabase:
         
         return contact_hash
     
-    def update_invite_status(self, contact_hash: str, status: str, error_text: str = None):
+    def update_invite_status(self, contact_hash: str, status: str, error_text: Optional[str] = None):
         """Update invite status"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
