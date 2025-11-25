@@ -1,0 +1,14 @@
+{
+  "name": "n8n-replit-agents",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "node -e \"require('./n8n-client').n8n.triggerWorkflow('test', {test: true}).then(console.log)\""
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "node-cron": "^3.0.3",
+    "cheerio": "^1.0.0-rc.12"
+  }
+}
