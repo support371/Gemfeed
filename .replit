@@ -2,7 +2,7 @@ modules = ["nodejs-20", "python-3.11"]
 
 [nix]
 channel = "stable-25_05"
-packages = ["openssl", "postgresql"]
+packages = ["glibcLocales", "openssl", "postgresql"]
 
 [deployment]
 deploymentTarget = "autoscale"
@@ -32,6 +32,10 @@ waitForPort = 5000
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 40175
+externalPort = 3000
 
 [agent]
 integrations = ["python_openai==1.0.0", "styling_replit==1.0.0"]

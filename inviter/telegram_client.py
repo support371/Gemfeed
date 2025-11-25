@@ -44,7 +44,7 @@ class TelegramClient:
         self.call_count += 1
         self.last_call_time = time.time()
     
-    def create_invite_link(self, entity_name: str) -> Tuple[bool, Dict]:
+    def create_invite_link(self, entity_name: str) -> Tuple[bool, Optional[Dict]]:
         """Create a single-use invite link for the target group"""
         self._enforce_rate_limit()
         
