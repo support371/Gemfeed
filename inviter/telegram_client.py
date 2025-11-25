@@ -133,9 +133,10 @@ class TelegramClient:
         try:
             # Get bot info in the target chat
             url = f"{self.api_base}/getChatMember"
+            bot_token = TELEGRAM_BOT_TOKEN or ""
             data = {
                 'chat_id': TARGET_GROUP_CHAT_ID,
-                'user_id': TELEGRAM_BOT_TOKEN.split(':')[0]  # Bot ID from token
+                'user_id': bot_token.split(':')[0]  # Bot ID from token
             }
             
             response = requests.post(url, data=data, timeout=30)
@@ -170,7 +171,7 @@ class TelegramClient:
             return self.send_message(ADMIN_TELEGRAM_ID, alert_message)
         return False
     
-    def get_chat_info(self, chat_id: str = None) -> Optional[Dict]:
+    def get_chat_info(self, chat_id: Optional[str] = None) -> Optional[Dict]:
         """Get information about a chat"""
         target_chat = chat_id or TARGET_GROUP_CHAT_ID
         if not target_chat:
