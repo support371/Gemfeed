@@ -1,8 +1,7 @@
 import sqlite3
 import hashlib
-import json
 from datetime import datetime, timedelta
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 
 class InviteDatabase:
     """Local SQLite database for tracking invites and deduplication"""
@@ -136,12 +135,14 @@ class InviteDatabase:
         
         cursor.execute('SELECT * FROM invites WHERE invite_link = ?', (invite_link,))
         row = cursor.fetchone()
-        conn.close()
         
         if row:
             columns = [desc[0] for desc in cursor.description]
-            return dict(zip(columns, row))
+            result = dict(zip(columns, row))
+            conn.close()
+            return result
         
+        conn.close()
         return None
     
     def create_run(self, run_id: str, csv_filename: str, total_contacts: int):
