@@ -1,29 +1,29 @@
 """Database models and schema definitions"""
 
 def get_schema():
-    """Returns the database schema as SQL commands"""
+    """Returns the database schema as SQL commands compatible with PostgreSQL"""
     return [
         """
         CREATE TABLE IF NOT EXISTS rss_feeds (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             url TEXT UNIQUE NOT NULL,
             name TEXT,
-            active INTEGER DEFAULT 1,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            active BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         )
         """,
         """
         CREATE TABLE IF NOT EXISTS rss_items (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             title TEXT NOT NULL,
             summary TEXT,
             link TEXT UNIQUE NOT NULL,
             category TEXT DEFAULT 'General',
             date TEXT,
-            approved INTEGER DEFAULT 0,
+            approved BOOLEAN DEFAULT FALSE,
             ai_suggestion TEXT,
             feed_source TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         )
         """,
         """

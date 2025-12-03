@@ -12,8 +12,7 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
 
-# Initialize database
-init_db()
+# The database is initialized manually. See database.py for schema.
 
 @app.route('/')
 def landing():
