@@ -1,0 +1,485 @@
+import React, { useState, useMemo, useEffect } from 'react';
+import { 
+  Menu, 
+  Search, 
+  Sun, 
+  Moon,
+  ChevronRight,
+  TrendingUp,
+  Filter,
+  Shield, 
+  Briefcase,
+  Home,
+  Cpu,
+  Coins,
+  Globe,
+  Lock,
+  CheckCircle,
+  X,
+  Share2,
+  Bookmark,
+  ExternalLink,
+  Server,
+  Loader2,
+  Eye,
+  FileText
+} from 'lucide-react';
+
+// --- Mock Data with Real Provider URLs ---
+const MOCK_DATA = [
+  // TECH
+  {
+    id: 1,
+    title: "Gartner Warnings: Organizations urged to block 'Agentic' AI Browsers immediately",
+    source: "TechNewsWorld",
+    time: "2h ago",
+    category: "Tech",
+    imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
+    excerpt: "New report highlights security risks as AI-driven browsers can expose sensitive enterprise data.",
+    url: "https://www.technewsworld.com/", 
+    content: [
+      "Organizations are facing a new wave of security challenges as 'Agentic' AI browsers gain popularity. Gartner's latest report suggests that these tools, while powerful, often bypass traditional security perimeters, allowing for unauthorized data exfiltration.",
+      "The core issue lies in the autonomy of these agents. Unlike standard web browsers that require user input for navigation, agentic browsers can traverse the web, fill out forms, and interact with APIs independently. Without strict CASB (Cloud Access Security Broker) policies, these agents could inadvertently upload proprietary source code or customer PII to public LLM endpoints.",
+      "CISOs are advised to update their security posture immediately. Recommendations include implementing strict 'human-in-the-loop' verification for data egress and blocking known agentic user-agents at the network gateway until a secure, enterprise-grade framework is established."
+    ]
+  },
+  {
+    id: 2,
+    title: "Samsung Galaxy Z TriFold Debuts: A new era for foldable devices",
+    source: "Gadget Weekly",
+    time: "4h ago",
+    category: "Tech",
+    imageUrl: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&q=80&w=800",
+    excerpt: "The dual-hinge system promises a tablet-sized experience that fits in your pocket.",
+    url: "https://www.engadget.com/",
+    content: [
+      "Samsung has officially unveiled the Galaxy Z TriFold, a device that aims to bridge the gap between smartphones and tablets once and for all. Featuring a revolutionary dual-hinge mechanism, the device unfolds from a standard 6.5-inch phone into a massive 10.2-inch canvas.",
+      "The engineering marvel solves one of the biggest complaints of previous foldables: the crease. By using a new 'waterdrop' hinge design on both sides, the screen remains perfectly flat when deployed. The device is powered by the latest Snapdragon 8 Gen 5 processor, ensuring desktop-class performance for multitasking.",
+      "Market analysts predict this form factor could disrupt the tablet market significantly, especially for enterprise users who need productivity on the go without carrying multiple devices."
+    ]
+  },
+  {
+    id: 3,
+    title: "Nvidia vs. Spectral: The $5 Trillion Battle for Compute Supremacy",
+    source: "Silicon Valley Journal",
+    time: "6h ago",
+    category: "Tech",
+    imageUrl: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=800",
+    excerpt: "New compiler technology could open the door to broader hardware adoption in AI training.",
+    url: "https://www.wsj.com/tech",
+    content: [
+      "The landscape of AI hardware is shifting. While Nvidia has long held the crown with its CUDA ecosystem, a new challenger, Spectral, is making waves with a hardware-agnostic compiler that promises to unlock the full potential of AMD and Intel chips.",
+      "Spectral's approach is software-first. By abstracting the complexity of the underlying hardware, they allow developers to write code once and deploy it anywhere with near-native performance. This could break the vendor lock-in that has defined the AI boom of the last decade.",
+      "Investment firms are taking notice, with Spectral's valuation soaring past $50 billion in private markets. If their technology scales as promised, the $5 trillion compute market is up for grabs."
+    ]
+  },
+  // FINANCE & BUSINESS
+  {
+    id: 4,
+    title: "Market Rally: S&P 500 hits new record as inflation data cools",
+    source: "Fox Business",
+    time: "1h ago",
+    category: "Finance",
+    imageUrl: "https://images.unsplash.com/photo-1611974765270-ca1258634369?auto=format&fit=crop&q=80&w=800",
+    excerpt: "Fed policymaker floats further rate cuts as economy stays on the 'golden path'.",
+    url: "https://www.foxbusiness.com/",
+    content: [
+      "Wall Street cheered this morning as the latest CPI data came in lower than expected, fueling hopes that the Federal Reserve will continue its rate-cutting cycle. The S&P 500 surged 1.2% to close at a new all-time high.",
+      "The 'soft landing' scenario, once thought improbable, now seems to be the baseline expectation. Consumer spending remains resilient, and the labor market, while cooling, has avoided a collapse. Sector rotation is evident, with small-caps finally joining the rally alongside the Magnificent Seven tech giants.",
+      "However, some analysts urge caution. 'The market is priced for perfection,' noted chief strategist Jane Doe. 'Any shock to the geopolitical landscape or a resurgence in energy prices could derail this momentum quickly.'"
+    ]
+  },
+  {
+    id: 5,
+    title: "Elon Musk's Tesla Pay Package Restored by Delaware Court",
+    source: "CNBC",
+    time: "3h ago",
+    category: "Business",
+    imageUrl: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=800",
+    excerpt: "The controversial compensation package is back in play following a supreme court ruling.",
+    url: "https://www.cnbc.com/",
+    content: [
+      "In a stunning reversal, the Delaware Supreme Court has reinstated Elon Musk's 2018 compensation package, valued at over $50 billion. The decision overturns a lower court ruling that had voided the deal earlier this year.",
+      "The court cited the overwhelming shareholder re-approval vote as a primary factor. 'The board's process may have been flawed, but the will of the owners cannot be ignored twice,' the ruling stated. Tesla shares jumped 5% in after-hours trading.",
+      "Legal experts warn this sets a new precedent for executive compensation governance. It signals that shareholder ratification can cure significant procedural defects, potentially emboldening boards to approve more aggressive pay structures for superstar CEOs."
+    ]
+  },
+  // CYBERSECURITY
+  {
+    id: 11,
+    title: "Critical UEFI Flaw: Millions of Motherboards at Risk",
+    source: "The Hacker News",
+    time: "1h ago",
+    category: "Cybersecurity",
+    imageUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800",
+    excerpt: "ASRock, ASUS, and MSI boards vulnerable to early-boot DMA attacks.",
+    url: "https://thehackernews.com/",
+    content: [
+      "Security researchers have disclosed a massive vulnerability affecting the UEFI firmware of millions of motherboards from major manufacturers including ASRock, ASUS, and MSI. The flaw, dubbed 'LogoFAIL', exploits image parsing libraries used to display the boot logo.",
+      "By replacing the legitimate boot logo with a malicious image file, attackers can execute code during the early boot phase (DXE), bypassing all OS-level security protections like Secure Boot and Intel Boot Guard. This allows for the installation of persistent rootkits that are nearly impossible to detect or remove.",
+      "Vendors are scrambling to release BIOS updates. Users are strongly advised to check their motherboard manufacturer's support page immediately and flash the latest firmware. Until patched, physical access to the machine should be strictly controlled."
+    ]
+  },
+  {
+    id: 12,
+    title: "North Korea's Digital Heist: $2B Stolen in Crypto in 2025",
+    source: "SecurityWeek",
+    time: "3h ago",
+    category: "Cybersecurity",
+    imageUrl: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800",
+    excerpt: "Report links fake IT workers and sophisticated phishing campaigns to massive state-sponsored theft.",
+    url: "https://www.securityweek.com/",
+    content: [
+      "A new UN report estimates that North Korean state-sponsored hackers have stolen nearly $2 billion in cryptocurrency in 2025 alone. The funds are reportedly being used to finance the regime's nuclear weapons program.",
+      "The tactics have evolved. Beyond traditional exchange hacks, the Lazarus Group is now deploying thousands of fake IT workers who infiltrate western tech companies. Once hired, they use their access to inject vulnerabilities or steal private keys from the inside.",
+      "The crypto industry is under immense pressure to enhance KYC (Know Your Customer) and AML (Anti-Money Laundering) protocols. 'We are facing a nation-state adversary with the agility of a startup,' said a leading cybersecurity analyst. 'The days of relying solely on smart contract audits are over.'"
+    ]
+  },
+];
+
+const CATEGORIES = [
+  { id: 'all', label: 'Top Stories', icon: Globe },
+  { id: 'Tech', label: 'Tech', icon: Cpu },
+  { id: 'Finance', label: 'Finance', icon: TrendingUp },
+  { id: 'Business', label: 'Business', icon: Briefcase },
+  { id: 'Crypto', label: 'Crypto', icon: Coins },
+  { id: 'Real Estate', label: 'Real Estate', icon: Home },
+  { id: 'Cybersecurity', label: 'Cybersecurity', icon: Shield },
+];
+
+// --- Secure Backend Reader Component ---
+
+const SecureReaderView = ({ article, onClose }) => {
+  const [redirectStep, setRedirectStep] = useState(0);
+  const steps = [
+    "Initiating Secure Handshake...",
+    "Encrypting Traffic (AES-256)...",
+    "Sanitizing External Scripts...",
+    "Redirecting to GEM Assist Backend..."
+  ];
+
+  useEffect(() => {
+    // Sequence the loading steps
+    const timers = steps.map((_, index) => 
+      setTimeout(() => setRedirectStep(index + 1), (index + 1) * 600)
+    );
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  const isLoading = redirectStep < steps.length;
+
+  return (
+    <div className="fixed inset-0 z-50 bg-slate-950 flex flex-col font-sans animate-in fade-in duration-200">
+      
+      {/* Backend Header */}
+      <div className="h-16 bg-slate-900 border-b border-emerald-900/30 flex items-center justify-between px-6 shadow-2xl shrink-0 relative overflow-hidden">
+         {/* Animated Scan Line */}
+         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent animate-[shimmer_2s_infinite]"></div>
+         
+         <div className="flex items-center gap-3">
+           <div className="bg-emerald-900/50 p-2 rounded border border-emerald-500/30 text-emerald-400">
+             <Server size={20} />
+           </div>
+           <div>
+             <h2 className="font-bold tracking-wider text-emerald-50 text-sm">GEM ASSIST</h2>
+             <div className="flex items-center gap-1.5">
+               <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+               <span className="text-[10px] uppercase text-emerald-400 font-mono tracking-widest">Secure Backend</span>
+             </div>
+           </div>
+         </div>
+
+         <div className="flex items-center gap-4">
+           {!isLoading && (
+              <div className="hidden md:flex items-center gap-2 text-xs font-mono text-emerald-600 bg-emerald-950/50 px-3 py-1.5 rounded-full border border-emerald-900">
+                <Lock size={12} />
+                TLS 1.3 ENCRYPTED
+              </div>
+           )}
+           <button 
+             onClick={onClose} 
+             className="p-2 hover:bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors border border-transparent hover:border-slate-700"
+           >
+             <X size={20}/>
+           </button>
+         </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-hidden relative flex flex-col">
+        
+        {/* Loading / Redirect Simulation */}
+        {isLoading ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 z-20">
+            <div className="w-full max-w-md px-6">
+              <div className="flex justify-between items-center mb-6">
+                <Shield size={48} className="text-emerald-500 animate-pulse" />
+                <div className="text-right">
+                   <div className="text-xs text-slate-500 uppercase tracking-widest font-mono mb-1">Security Protocol</div>
+                   <div className="text-emerald-400 font-mono font-bold">GEM-SEC-01</div>
+                </div>
+              </div>
+              
+              <div className="space-y-4 font-mono text-sm">
+                {steps.map((step, idx) => (
+                  <div key={idx} className={`flex items-center gap-3 transition-opacity duration-300 ${idx < redirectStep ? 'opacity-100' : 'opacity-0'}`}>
+                    {idx < redirectStep - 1 ? (
+                      <CheckCircle size={16} className="text-emerald-500" />
+                    ) : (
+                      <Loader2 size={16} className="text-blue-500 animate-spin" />
+                    )}
+                    <span className={idx < redirectStep - 1 ? "text-emerald-500" : "text-blue-400"}>
+                      {step}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Progress Bar */}
+              <div className="h-1 w-full bg-slate-800 rounded-full mt-8 overflow-hidden">
+                <div 
+                  className="h-full bg-emerald-500 transition-all duration-500 ease-out"
+                  style={{ width: `${(redirectStep / steps.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Actual Reader Content */
+          <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="max-w-3xl mx-auto px-6 py-12">
+              
+              {/* Security Banner */}
+              <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/50 rounded-lg p-3 mb-8 flex items-center gap-3 text-xs md:text-sm text-emerald-800 dark:text-emerald-400">
+                <Shield size={16} className="shrink-0" />
+                <span>Content sanitized and served via GEM Assist Secure Gateway. Ad-trackers blocked.</span>
+              </div>
+
+              {/* Article Meta */}
+              <div className="flex flex-wrap items-center gap-3 mb-6 text-sm">
+                <span className="bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full font-bold uppercase text-xs tracking-wider">
+                  {article.category}
+                </span>
+                <span className="text-slate-400 flex items-center gap-1">
+                  <FileText size={14}/> {article.source}
+                </span>
+                <span className="text-slate-400">•</span>
+                <span className="text-slate-400">{article.time}</span>
+              </div>
+              
+              <h1 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-8 leading-tight tracking-tight">
+                {article.title}
+              </h1>
+
+              <div className="aspect-video w-full rounded-2xl overflow-hidden mb-10 shadow-2xl ring-1 ring-slate-900/10 dark:ring-white/10">
+                <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover" />
+              </div>
+
+              <div className="prose dark:prose-invert prose-lg max-w-none text-slate-700 dark:text-slate-300">
+                <p className="lead font-medium text-xl text-slate-900 dark:text-slate-200 mb-6 border-l-4 border-blue-500 pl-4">
+                  {article.excerpt}
+                </p>
+                
+                {Array.isArray(article.content) ? (
+                  article.content.map((paragraph, index) => (
+                    <p key={index} className="mb-6 leading-relaxed">
+                      {paragraph}
+                    </p>
+                  ))
+                ) : (
+                  <p className="mb-6">{article.content}</p>
+                )}
+              </div>
+
+              {/* Footer Action */}
+              <div className="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-100 dark:bg-slate-900 p-6 rounded-xl">
+                 <div className="flex flex-col">
+                    <span className="text-xs text-slate-400 font-mono mb-1">SOURCE ORIGIN</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-200">{article.source}</span>
+                 </div>
+                 
+                 {/* Updated Link Component */}
+                 <a 
+                   href={article.url}
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-bold text-sm transition-all shadow-lg hover:shadow-blue-500/20 transform hover:-translate-y-0.5 active:translate-y-0"
+                 >
+                   Open Original Source <ExternalLink size={16}/>
+                 </a>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const NavPill = ({ active, label, icon: Icon, onClick }) => (
+  <button 
+    onClick={onClick}
+    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 whitespace-nowrap ${
+      active 
+        ? 'bg-slate-900 text-white dark:bg-emerald-600 dark:text-white shadow-lg scale-105 ring-2 ring-slate-900 dark:ring-emerald-500' 
+        : 'bg-white text-slate-500 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'
+    }`}
+  >
+    {Icon && <Icon size={14} />}
+    {label}
+  </button>
+);
+
+const NewsCard = ({ article, onClick }) => (
+  <div className="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 dark:border-slate-800 flex flex-col h-full cursor-pointer hover:-translate-y-1">
+    <div className="relative h-48 overflow-hidden">
+      <img 
+        src={article.imageUrl} 
+        alt={article.title} 
+        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+      />
+      <div className="absolute top-3 left-3">
+        <span className="px-2 py-1 bg-slate-900/90 backdrop-blur text-xs font-bold rounded-md shadow-sm uppercase tracking-wide text-white flex items-center gap-1">
+          {article.category === 'Cybersecurity' && <Shield size={10} className="text-emerald-400"/>}
+          {article.category}
+        </span>
+      </div>
+    </div>
+    <div className="p-5 flex flex-col flex-1">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-500">
+          {article.source[0]}
+        </div>
+        <span className="text-xs font-semibold text-slate-500 uppercase">{article.source}</span>
+        <span className="text-slate-300">•</span>
+        <span className="text-xs text-slate-400">{article.time}</span>
+      </div>
+      
+      <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-tight mb-3 group-hover:text-blue-600 dark:group-hover:text-emerald-400 transition-colors">
+        {article.title}
+      </h3>
+      
+      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 flex-1">
+        {article.excerpt}
+      </p>
+
+      <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+        <div className="flex gap-2">
+           <button className="text-slate-400 hover:text-blue-500 transition-colors"><Share2 size={16} /></button>
+           <button className="text-slate-400 hover:text-blue-500 transition-colors"><Bookmark size={16} /></button>
+        </div>
+        <button 
+          onClick={(e) => { e.stopPropagation(); onClick(article); }}
+          className="text-white bg-slate-900 dark:bg-emerald-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-slate-800 dark:hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-900/20"
+        >
+          Read Story <ChevronRight size={14} />
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+// --- Main Application ---
+
+export default function GemNewsApp() {
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [selectedArticle, setSelectedArticle] = useState(null);
+
+  const filteredNews = useMemo(() => {
+    if (activeCategory === 'all') return MOCK_DATA;
+    return MOCK_DATA.filter(item => item.category === activeCategory || (activeCategory === 'Finance' && item.category === 'Business'));
+  }, [activeCategory]);
+
+  return (
+    <div className={`h-[800px] w-full flex flex-col transition-colors duration-300 font-sans ${isDarkMode ? 'dark bg-slate-950' : 'bg-slate-50'}`}>
+      
+      {/* Top Bar - Main Branding */}
+      <header className="h-16 bg-white/90 dark:bg-slate-900/90 backdrop-blur border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 z-20 sticky top-0">
+        <div className="flex items-center gap-3">
+          <div className="bg-slate-900 dark:bg-emerald-600 p-1.5 rounded-lg shadow-lg shadow-emerald-500/20">
+            <Shield size={20} className="text-white" />
+          </div>
+          <div>
+             <h1 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight leading-none">
+               GEM <span className="text-slate-500 dark:text-slate-400">Cybersecurity Assist</span>
+             </h1>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="hidden md:flex relative group">
+             <Search size={14} className="absolute left-3 top-2.5 text-slate-400 group-focus-within:text-emerald-500 transition-colors" />
+             <input type="text" placeholder="Search Intel..." className="bg-slate-100 dark:bg-slate-800 rounded-full pl-9 pr-4 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all w-48 text-slate-900 dark:text-white placeholder-slate-500" />
+          </div>
+          <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-500 transition-colors">
+            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border border-slate-600 flex items-center justify-center text-xs font-bold text-white">
+            GA
+          </div>
+        </div>
+      </header>
+
+      {/* Navigation Menu (Sticky) */}
+      <div className="bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 py-3 px-6 overflow-x-auto scrollbar-hide sticky top-16 z-10 shadow-sm">
+        <div className="flex gap-2 min-w-max">
+          {CATEGORIES.map(cat => (
+            <NavPill 
+              key={cat.id} 
+              active={activeCategory === cat.id} 
+              label={cat.label} 
+              icon={cat.icon}
+              onClick={() => setActiveCategory(cat.id)} 
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Content Area */}
+      <main className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
+        <div className="max-w-7xl mx-auto">
+          
+          {/* Section Header */}
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <CheckCircle size={12}/> System Operational
+              </p>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+                {activeCategory === 'all' ? 'Daily Intelligence Feed' : `${activeCategory} Briefing`}
+              </h2>
+            </div>
+            <button className="text-xs font-bold text-slate-500 hover:text-emerald-500 flex items-center gap-1 transition-colors">
+              Filter View <Filter size={12}/>
+            </button>
+          </div>
+
+          {/* Grid Layout */}
+          {filteredNews.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
+              {filteredNews.map(article => (
+                <NewsCard key={article.id} article={article} onClick={setSelectedArticle} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+              <Filter size={48} className="mb-4 opacity-20" />
+              <p>No stories found in this category.</p>
+            </div>
+          )}
+
+        </div>
+      </main>
+
+      {/* Detail View / Backend Redirect */}
+      {selectedArticle && (
+        <SecureReaderView 
+          article={selectedArticle} 
+          onClose={() => setSelectedArticle(null)} 
+        />
+      )}
+
+    </div>
+  );
+}
+

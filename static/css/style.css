@@ -121,6 +121,74 @@ footer {
     border-left: 4px solid var(--bs-info);
 }
 
+/* Newsletter Page Enhancements */
+.newsletter-hero {
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.newsletter-card {
+    border: 1px solid rgba(255, 193, 7, 0.1);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.newsletter-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(255, 193, 7, 0.15) !important;
+    border-color: rgba(255, 193, 7, 0.3);
+}
+
+.featured-card {
+    border: 2px solid rgba(255, 193, 7, 0.2);
+    position: relative;
+}
+
+.featured-card:hover {
+    border-color: rgba(255, 193, 7, 0.5);
+}
+
+.quality-badge {
+    z-index: 10;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.rating-stars {
+    display: flex;
+    gap: 2px;
+}
+
+.btn-primary-custom {
+    background-color: #ffc107;
+    color: #000;
+    border-color: #ffc107;
+    font-weight: 600;
+}
+
+.btn-primary-custom:hover {
+    background-color: #ffb300;
+    border-color: #ffb300;
+    color: #000;
+}
+
+.category-btn {
+    transition: all 0.2s ease;
+}
+
+.category-btn.active {
+    background-color: #ffc107;
+    color: #000;
+    border-color: #ffc107;
+    font-weight: 600;
+}
+
+.category-btn:hover {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-color: #ffc107;
+}
+
 /* Navigation enhancements */
 .navbar-brand {
     font-weight: 600;

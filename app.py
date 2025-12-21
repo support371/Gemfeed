@@ -25,6 +25,100 @@ def landing():
     """Official landing page showcasing the RSS curation system"""
     return render_template('landing.html')
 
+@app.route('/newsletter')
+def newsletter():
+    """GEM Security Newsletter - curated intelligence feed"""
+    try:
+        page = request.args.get('page', 1, type=int)
+        per_page = 12
+        offset = (page - 1) * per_page
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Calculate quality score (higher for recent, approved, from trusted sources)
+        cursor.execute("""
+            SELECT id, title, summary, link, category, date, approved, feed_source, quality_score
+            FROM rss_items 
+            WHERE category IN ('Cybersecurity', 'Tech', 'Finance', 'Business')
+            ORDER BY 
+                CASE WHEN approved = 1 THEN 0 ELSE 1 END,
+                CASE WHEN date LIKE '2025%' THEN 0 ELSE 1 END,
+                date DESC, 
+                id DESC
+            LIMIT ? OFFSET ?
+        """, (per_page, offset))
+        
+        articles = cursor.fetchall()
+
+        # Get total count
+        cursor.execute("SELECT COUNT(*) FROM rss_items")
+        total_articles = cursor.fetchone()[0]
+
+        # Get featured articles (approved + high quality)
+        cursor.execute("""
+            SELECT id, title, summary, link, category, date, approved, feed_source, quality_score
+            FROM rss_items 
+            WHERE approved = 1 AND quality_score >= 7
+            ORDER BY date DESC
+            LIMIT 3
+        """)
+        featured = cursor.fetchall()
+
+        conn.close()
+
+        # Convert to dicts for template
+        articles_list = []
+        for article in articles:
+            articles_list.append({
+                'id': article[0],
+                'title': article[1],
+                'summary': article[2],
+                'link': article[3],
+                'category': article[4],
+                'date': article[5],
+                'approved': article[6],
+                'feed_source': article[7],
+                'quality_score': article[8] or 5,
+                'image_url': f"https://images.unsplash.com/photo-{1550751827 + article[0]}?auto=format&fit=crop&q=80&w=800",
+                'time_ago': '2h ago'  # This could be calculated from date
+            })
+
+        featured_list = []
+        for article in featured:
+            featured_list.append({
+                'id': article[0],
+                'title': article[1],
+                'summary': article[2],
+                'link': article[3],
+                'category': article[4],
+                'date': article[5],
+                'approved': article[6],
+                'feed_source': article[7],
+                'quality_score': article[8] or 5,
+                'image_url': f"https://images.unsplash.com/photo-{1550751827 + article[0]}?auto=format&fit=crop&q=80&w=800",
+                'time_ago': '2h ago'
+            })
+
+        total_pages = (total_articles + per_page - 1) // per_page
+
+        return render_template('newsletter.html', 
+                             articles=articles_list,
+                             featured_articles=featured_list,
+                             total_articles=total_articles,
+                             featured_count=len(featured_list),
+                             current_page=page,
+                             total_pages=total_pages)
+    except Exception as e:
+        logging.error(f"Error in newsletter: {e}")
+        return render_template('newsletter.html', 
+                             articles=[],
+                             featured_articles=[],
+                             total_articles=0,
+                             featured_count=0,
+                             current_page=1,
+                             total_pages=1)
+
 @app.route('/dashboard')
 def dashboard():
     """Main dashboard showing RSS items for review"""

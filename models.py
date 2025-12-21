@@ -23,6 +23,9 @@ def get_schema():
             approved INTEGER DEFAULT 0,
             ai_suggestion TEXT,
             feed_source TEXT,
+            quality_score INTEGER DEFAULT 5,
+            image_url TEXT,
+            time_ago TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """,
