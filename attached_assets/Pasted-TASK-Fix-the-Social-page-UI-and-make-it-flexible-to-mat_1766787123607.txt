@@ -1,0 +1,90 @@
+TASK: Fix the Social page UI and make it flexible to match evolving requirements.
+
+GLOBAL RULES (DO NOT BREAK):
+- Do NOT change existing backend workflows, Telegram behavior, /api/news, dashboard auto-feed, domain, or schedulers.
+- Only fix/upgrade the Social page layout + wiring to existing (or optional) read-only social status endpoints.
+- Keep the dark cyber theme + modern cards layout.
+
+PRIMARY GOAL:
+Build a flexible “Social Distribution” page that supports:
+- Multiple platforms (Telegram, X, Facebook, Nextdoor, Instagram, TikTok)
+- Content types (text/link, image, video)
+- Status + logs + queue view
+- Controls to enable/disable platforms (UI controls; if backend not ready, keep as local UI state)
+
+ROUTES:
+- /social (or /dashboard/social) for the social management page
+
+LAYOUT REQUIREMENTS (FLEXIBLE / RESPONSIVE):
+A) Top header:
+- Title: “Social Distribution”
+- Subtext: “Auto-generate & auto-upload content across channels”
+- Badges: System ONLINE, Last run time, Queue size
+
+B) Platform control grid (cards):
+- Each platform card shows:
+  - Enabled toggle
+  - Posting cadence (dropdown: 1/day, 3/day, hourly, etc.)
+  - Supported formats (chips: text, image, video)
+  - Status indicator (OK / Degraded / Error)
+  - Last posted time + last post result
+- Cards must be responsive:
+  - mobile: 1 column
+  - tablet: 2 columns
+  - desktop: 3–4 columns
+
+C) Content rules panel:
+- Filters: severity/tags (if using article pipeline)
+- Tone selectors:
+  - Facebook: casual/shareable, family budgeting, easy/secure
+  - Nextdoor: neighbor tip tone, no crypto slang, utility-focused
+  - IG/TikTok: hook + benefit + CTA, short captions
+- Media preferences:
+  - Prefer VIDEO for TikTok/IG/FB
+  - Fallback IMAGE if video fails
+
+D) Queue + logs (table / list):
+- Tabs:
+  1) “Queue” (pending posts)
+  2) “Posted” (history)
+  3) “Failures” (retryable errors)
+- Each entry shows:
+  - content_id / article_id
+  - platform
+  - type (video/image/text)
+  - scheduled time
+  - status + error message
+  - action: Retry / View payload (read-only)
+- Must handle empty states gracefully
+
+E) Preview builder (optional but recommended):
+- Select platform → show a preview of caption + media thumbnail
+- “Generate example” button uses mock data if real pipeline not connected
+
+DATA WIRING (DON’T BREAK EXISTING):
+- If these endpoints exist, use them:
+  - GET /api/social/status
+  - GET /api/social/queue
+  - GET /api/social/logs
+- If they do NOT exist, implement the page in “UI-only mode”:
+  - Use mocked data models
+  - Keep the UI stable
+  - Do NOT block deployment
+
+PERFORMANCE / RELIABILITY:
+- Loading skeletons for cards and tables
+- Error banner + retry button if fetch fails
+- Use polling (30–60s) for status only, not heavy rerenders
+- Memoize lists; avoid rerender storms
+
+DELIVERABLES:
+- Complete code files with paths and contents
+- Components broken out:
+  - PlatformCard, PlatformGrid
+  - QueueTable, LogTable
+  - RulesPanel, PreviewPanel
+  - useSocialStatus hook (polling + abort controller)
+
+RESULT:
+A Social page that can adapt as we add/modify platform requirements without redesigning again.
+Proceed without asking approval.

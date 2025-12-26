@@ -30,6 +30,35 @@ def landing():
     """Official landing page showcasing the RSS curation system"""
     return render_template('landing.html')
 
+@app.route('/social')
+def social_page():
+    """Flexible Social Distribution page"""
+    return render_template('social_distribution.html')
+
+@app.route('/api/social/logs')
+def api_social_logs():
+    """Read-only social logs endpoint"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT platform, content_id, status, external_post_id, posted_at, error FROM social_posts ORDER BY posted_at DESC LIMIT 50")
+        logs = cursor.fetchall()
+        conn.close()
+        
+        log_list = []
+        for log in logs:
+            log_list.append({
+                'platform': log[0],
+                'content_id': log[1],
+                'status': log[2],
+                'external_id': log[3],
+                'posted_at': log[4],
+                'error': log[5]
+            })
+        return jsonify({'logs': log_list})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/social-manager')
 def social_manager():
     """Manage social media distribution via Ayrshare"""
