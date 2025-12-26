@@ -343,8 +343,8 @@ def generate_suggestion(item_id):
         logging.error(f"Error generating suggestion: {e}")
         return jsonify({'error': str(e)}), 500
 
-@app.route('/approve/<int:item_id>', methods=['POST'])
-def approve(item_id):
+@app.route('/approve_item/<int:item_id>', methods=['POST'])
+def approve_item(item_id):
     """Approve an item and send to Telegram"""
     try:
         conn = get_db_connection()
@@ -382,8 +382,8 @@ def approve(item_id):
         flash(f'Error approving item: {str(e)}', 'danger')
         return redirect(url_for('dashboard'))
 
-@app.route('/reject/<int:item_id>', methods=['POST'])
-def reject(item_id):
+@app.route('/reject_item/<int:item_id>', methods=['POST'])
+def reject_item(item_id):
     """Reject an item (delete it)"""
     try:
         conn = get_db_connection()
