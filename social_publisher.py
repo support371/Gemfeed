@@ -68,6 +68,16 @@ def render_nextdoor(article):
     caption = "\n".join([ln for ln in lines if ln])
     return sanitize_nextdoor_text(caption)
 
+def render_tiktok(article):
+    """Version D: Short hook + 1 clear benefit + CTA"""
+    text = f"🛡️ SECURITY TIP: {article['title']}\n\nProtect your family's budget from online threats! 💸\n\nFollow for daily security tips! #GEMSecurity #Safety"
+    return text
+
+def render_instagram(article):
+    """Version D: Short hook + 1 clear benefit + CTA"""
+    text = f"✨ {article['title']}\n\nStay one step ahead of scammers. One simple check could save your budget! 🛡️\n\nFollow @GEMSecurity for more. #CyberSafety #Secure"
+    return text
+
 def publish_to_ayrshare(post_text, platforms, media_urls=None, options=None):
     api_key = os.environ.get("AYRSHARE_API_KEY")
     if not api_key:
@@ -81,6 +91,13 @@ def publish_to_ayrshare(post_text, platforms, media_urls=None, options=None):
     }
     if media_urls:
         payload["mediaUrls"] = media_urls
+    
+    # Platform-specific defaults
+    if "facebook" in platforms:
+        payload["faceBookOptions"] = {"isReel": True}
+    if "nextdoor" in platforms:
+        payload["nextdoorOptions"] = {"scope": "public"}
+        
     if options:
         payload.update(options)
 

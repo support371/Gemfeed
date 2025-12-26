@@ -13,6 +13,7 @@ from inviter.config import validate_config
 
 # --- Social Publisher Imports ---
 import social_publisher
+import media_generator
 # --- End Social Publisher Imports ---
 
 # Configure logging
@@ -54,7 +55,9 @@ def social_manager():
             renders[item[0]] = {
                 'x': social_publisher.render_x(item_dict),
                 'facebook': social_publisher.render_facebook(item_dict),
-                'nextdoor': social_publisher.render_nextdoor(item_dict)
+                'nextdoor': social_publisher.render_nextdoor(item_dict),
+                'instagram': social_publisher.render_instagram(item_dict),
+                'tiktok': social_publisher.render_tiktok(item_dict)
             }
 
         return render_template('social_manager.html', items=items_list, renders=renders)
@@ -64,36 +67,44 @@ def social_manager():
 
 @app.route('/publish_social/<int:item_id>', methods=['POST'])
 def publish_social(item_id):
-    """Publish an article to a specific social platform with deduplication"""
+    """Publish an article to a specific social platform with media support and deduplication"""
     platform = request.form.get('platform')
+    media_type = request.form.get('media_type', 'image') # Default to image
+    
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         
         # Check for dedupe
-        cursor.execute("SELECT link FROM rss_items WHERE id = ?", (item_id,))
+        cursor.execute("SELECT id, title, summary, link, category FROM rss_items WHERE id = ?", (item_id,))
         item_data = cursor.fetchone()
         if not item_data:
             conn.close()
             flash("Item not found", "error")
             return redirect(url_for('social_manager'))
             
-        url_link = item_data[0]
-        post_key = social_publisher.stable_post_key(platform, str(item_id), url_link)
-        
-        # Check if already posted (we'll use a simple table or just log check)
-        # For now, let's assume we want to prevent double posting in the same session/view
-        
-        cursor.execute("SELECT title, summary, link, category FROM rss_items WHERE id = ?", (item_id,))
-        item = cursor.fetchone()
-        conn.close()
-
         article = {
-            'title': item[0],
-            'summary': item[1],
-            'link': item[2],
-            'category': item[3]
+            'id': item_data[0],
+            'title': item_data[1],
+            'summary': item_data[2],
+            'link': item_data[3],
+            'category': item_data[4]
         }
+        
+        # Persistence check
+        cursor.execute("SELECT external_post_id FROM social_posts WHERE platform = ? AND content_id = ? AND status = 'success'", 
+                      (platform, str(item_id)))
+        if cursor.fetchone():
+            conn.close()
+            flash(f"Already posted to {platform}!", "warning")
+            return redirect(url_for('social_manager'))
+
+        # Prepare payload based on platform
+        media_urls = []
+        if media_type == 'video':
+            media_urls = [media_generator.make_video(article)]
+        else:
+            media_urls = [media_generator.make_image(article)]
 
         if platform == 'twitter':
             text = social_publisher.render_x(article)
@@ -104,20 +115,39 @@ def publish_social(item_id):
         elif platform == 'nextdoor':
             text = social_publisher.render_nextdoor(article)
             platforms = ["nextdoor"]
+        elif platform == 'instagram':
+            text = social_publisher.render_instagram(article)
+            platforms = ["instagram"]
+        elif platform == 'tiktok':
+            text = social_publisher.render_tiktok(article)
+            platforms = ["tiktok"]
+            if media_type != 'video':
+                flash("TikTok requires video media.", "error")
+                conn.close()
+                return redirect(url_for('social_manager'))
         else:
+            conn.close()
             flash("Invalid platform", "error")
             return redirect(url_for('social_manager'))
 
-        result = social_publisher.publish_to_ayrshare(text, platforms)
+        result = social_publisher.publish_to_ayrshare(text, platforms, media_urls=media_urls)
         
-        # Log result
-        logging.info(f"Social Post [{platform}] Result: {result}")
+        # Log result in DB
+        status = 'success' if (result.get('status') == 'success' or 'id' in result) else 'error'
+        ext_id = str(result.get('id', ''))
+        error_msg = result.get('message', '') if status == 'error' else None
         
-        if result.get('status') == 'success' or 'id' in result:
+        cursor.execute("""
+            INSERT INTO social_posts (platform, content_id, status, external_post_id, error)
+            VALUES (?, ?, ?, ?, ?)
+        """, (platform, str(item_id), status, ext_id, error_msg))
+        conn.commit()
+        conn.close()
+
+        if status == 'success':
             flash(f"Successfully posted to {platform}!", "success")
         else:
-            error_msg = result.get('message', result.get('error', 'Unknown error'))
-            flash(f"Failed to post to {platform}: {error_msg}", "error")
+            flash(f"Failed to post to {platform}: {error_msg or 'Unknown error'}", "error")
 
     except Exception as e:
         logging.error(f"Publish error: {e}")
