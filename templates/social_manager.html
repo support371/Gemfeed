@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}GEM Social Distribution Manager{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-slate-900 border-slate-800 text-white p-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary p-3 rounded-3">
+                        <i data-feather="share-2" size="32"></i>
+                    </div>
+                    <div>
+                        <h2 class="mb-0">Social Distribution Manager</h2>
+                        <p class="text-slate-400 mb-0">Multi-platform broadcasting via Ayrshare</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for item in items %}
+        <div class="col-lg-6">
+            <div class="card h-100 border-slate-800 bg-slate-900 text-white">
+                <div class="card-header border-slate-800 bg-slate-800/50">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-info">{{ item.category }}</span>
+                        <small class="text-slate-400">{{ item.date }}</small>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.title }}</h5>
+                    <p class="small text-slate-400 mb-4">{{ item.summary[:200] }}...</p>
+                    
+                    <div class="social-previews">
+                        <ul class="nav nav-tabs border-slate-800" id="tabs-{{ item.id }}" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link active text-white border-slate-800" data-bs-toggle="tab" data-bs-target="#x-{{ item.id }}">X/Twitter</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link text-white border-slate-800" data-bs-toggle="tab" data-bs-target="#fb-{{ item.id }}">Facebook</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link text-white border-slate-800" data-bs-toggle="tab" data-bs-target="#nd-{{ item.id }}">Nextdoor</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content p-3 bg-slate-800/30 rounded-bottom">
+                            <div class="tab-pane fade show active" id="x-{{ item.id }}">
+                                <p class="small font-monospace mb-0">{{ renders[item.id].x }}</p>
+                            </div>
+                            <div class="tab-pane fade" id="fb-{{ item.id }}">
+                                <p class="small mb-0">{{ renders[item.id].facebook }}</p>
+                            </div>
+                            <div class="tab-pane fade" id="nd-{{ item.id }}">
+                                <p class="small mb-0">{{ renders[item.id].nextdoor }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer border-slate-800 d-flex gap-2">
+                    <form action="{{ url_for('publish_social', item_id=item.id) }}" method="post" class="w-100">
+                        <div class="btn-group w-100">
+                            <button type="submit" name="platform" value="twitter" class="btn btn-outline-primary btn-sm">Post to X</button>
+                            <button type="submit" name="platform" value="facebook" class="btn btn-outline-primary btn-sm">Post to FB</button>
+                            <button type="submit" name="platform" value="nextdoor" class="btn btn-outline-primary btn-sm">Post to ND</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .bg-slate-900 { background-color: #0f172a; }
+    .bg-slate-800 { background-color: #1e293b; }
+    .border-slate-800 { border-color: #334155; }
+    .text-slate-400 { color: #94a3b8; }
+    .nav-tabs .nav-link.active { background-color: #1e293b !important; }
+</style>
+{% endblock %}
