@@ -11,6 +11,10 @@ from inviter.telegram_client import TelegramClient
 from inviter.config import validate_config
 # --- End new imports ---
 
+# --- Social Publisher Imports ---
+import social_publisher
+# --- End Social Publisher Imports ---
+
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -25,7 +29,84 @@ def landing():
     """Official landing page showcasing the RSS curation system"""
     return render_template('landing.html')
 
-@app.route('/newsletter')
+@app.route('/social-manager')
+def social_manager():
+    """Manage social media distribution via Ayrshare"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, title, summary, link, category, date FROM rss_items WHERE approved = 1 ORDER BY date DESC LIMIT 20")
+        items = cursor.fetchall()
+        conn.close()
+
+        items_list = []
+        renders = {}
+        for item in items:
+            item_dict = {
+                'id': item[0],
+                'title': item[1],
+                'summary': item[2],
+                'link': item[3],
+                'category': item[4],
+                'date': item[5]
+            }
+            items_list.append(item_dict)
+            renders[item[0]] = {
+                'x': social_publisher.render_x(item_dict),
+                'facebook': social_publisher.render_facebook(item_dict),
+                'nextdoor': social_publisher.render_nextdoor(item_dict)
+            }
+
+        return render_template('social_manager.html', items=items_list, renders=renders)
+    except Exception as e:
+        logging.error(f"Social manager error: {e}")
+        return render_template('social_manager.html', items=[], renders={})
+
+@app.route('/publish_social/<int:item_id>', methods=['POST'])
+def publish_social(item_id):
+    """Publish an article to a specific social platform"""
+    platform = request.form.get('platform')
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT title, summary, link, category FROM rss_items WHERE id = ?", (item_id,))
+        item = cursor.fetchone()
+        conn.close()
+
+        if not item:
+            flash("Item not found", "error")
+            return redirect(url_for('social_manager'))
+
+        article = {
+            'title': item[0],
+            'summary': item[1],
+            'link': item[2],
+            'category': item[3]
+        }
+
+        if platform == 'twitter':
+            text = social_publisher.render_x(article)
+            platforms = ["twitter"]
+        elif platform == 'facebook':
+            text = social_publisher.render_facebook(article)
+            platforms = ["facebook"]
+        elif platform == 'nextdoor':
+            text = social_publisher.render_nextdoor(article)
+            platforms = ["nextdoor"]
+        else:
+            flash("Invalid platform", "error")
+            return redirect(url_for('social_manager'))
+
+        result = social_publisher.publish_to_ayrshare(text, platforms)
+        if result.get('status') == 'success' or 'id' in result:
+            flash(f"Successfully posted to {platform}!", "success")
+        else:
+            flash(f"Failed to post to {platform}: {result.get('message', 'Unknown error')}", "error")
+
+    except Exception as e:
+        flash(f"Publish error: {str(e)}", "error")
+    
+    return redirect(url_for('social_manager'))
 def newsletter():
     """GEM Security Newsletter - curated intelligence feed"""
     try:
