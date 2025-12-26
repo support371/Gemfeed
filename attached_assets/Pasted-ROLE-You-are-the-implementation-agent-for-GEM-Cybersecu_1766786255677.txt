@@ -1,0 +1,92 @@
+ROLE:
+You are the implementation agent for GEM Cybersecurity Assist.
+Extend social automation to include TikTok + Instagram and support VIDEO + IMAGE posts (not articles only).
+Do NOT break or redesign any existing services: dashboard auto-feed, Telegram, /api/news, current schedulers, domain.
+
+PLATFORMS (UPDATED):
+- Telegram (keep as-is)
+- X (keep if enabled)
+- Facebook (enabled)
+- Nextdoor (enabled)
+- Instagram (ADD)
+- TikTok (ADD)
+
+DISTRIBUTION LAYER:
+- Continue using Ayrshare as the primary API port for: facebook, instagram, twitter/x, tiktok, nextdoor.
+- Use per-platform options flags where supported (IG types, FB reels, Nextdoor scope, TikTok video).
+
+NEW CONTENT TYPES (MUST SUPPORT):
+1) VIDEO (primary for TikTok + FB Reels + IG Reels)
+2) IMAGE (single image + caption; optional carousel if supported by your tooling)
+3) ARTICLE-LINK POSTS remain optional, but media is now first-class.
+
+CORE RULE:
+Backend remains the single source of truth.
+Frontend does not post; only backend posts through Ayrshare.
+
+========================================
+MEDIA PIPELINE (NEW MODULE)
+========================================
+Add a “Media Generator” stage after text generation:
+
+Trigger (new feature / daily summary / inflation-buster / user-activity event)
+→ LLM generates platform-specific captions (X, FB/IG, Nextdoor)
+→ Media Generator produces:
+   - videoUrl (mp4) OR imageUrl (png/jpg)
+→ Ayrshare publish(payload)
+→ Log result per platform
+
+MEDIA GENERATION REQUIREMENTS:
+- Video: 9:16 vertical for TikTok/IG Reels/FB Reels (1080x1920 recommended).
+- Image: 1080x1350 or 1080x1080.
+- Always include a safe watermark/brand overlay (“GEM Cybersecurity Assist”) when possible.
+- If a platform fails video upload, fallback to image post with same caption.
+
+TEXT GENERATION (MUST OUTPUT 4 VERSIONS):
+A) X: short/punchy (optional hashtags)
+B) Facebook: casual/shareable (family budgeting, easy, secure)
+C) Nextdoor: neighbor tip tone (no crypto slang; “Savings/Secure/Easy/Fees”)
+D) TikTok/Instagram: short hook + 1 clear benefit + CTA (“Follow for daily security tips”)
+
+NO CRYPTO SLANG ON NEXTDOOR (keep existing filter rules).
+
+========================================
+AYRSHARE PAYLOAD REQUIREMENTS
+========================================
+- Use mediaUrls for image/video uploads (preferred).
+- Use ONE post call per piece of content, with multiple platforms as needed.
+- Store dedupe key per platform: platform + content_id (or hash(url)).
+
+Example (video):
+{
+  "post": "<caption>",
+  "platforms": ["tiktok","instagram","facebook","nextdoor"],
+  "mediaUrls": ["https://your-cdn.com/generated-video.mp4"],
+  "faceBookOptions": {"isReel": true},
+  "nextdoorOptions": {"scope": "public"}
+}
+
+Example (image fallback):
+{
+  "post": "<caption>",
+  "platforms": ["instagram","facebook","nextdoor"],
+  "mediaUrls": ["https://your-cdn.com/generated-image.jpg"],
+  "nextdoorOptions": {"scope": "public"}
+}
+
+SCHEDULING / CADENCE:
+- TikTok: max 1–3/day (default 1/day unless changed)
+- Instagram: 1–3/day (default 1/day)
+- Nextdoor: max 1/day (default)
+- Facebook: 1–3/day
+- All failures are isolated; do not block other platforms.
+
+DELIVERABLES:
+1) /lib/social/renderers: instagram.ts, tiktok.ts, facebook.ts, nextdoor.ts, x.ts
+2) /lib/media/generator: makeVideo(), makeImage() that return hosted URLs
+3) /lib/social/publisher: publishAyrshare(payload)
+4) persistence: social_posts table (platform, content_id, status, external_post_id, posted_at, error)
+5) monitoring: /api/social/status (optional read-only)
+
+DO NOT CHANGE ANY EXISTING SERVICES.
+Proceed without asking approval.

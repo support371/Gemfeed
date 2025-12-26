@@ -45,6 +45,12 @@
                             <li class="nav-item">
                                 <button class="nav-link text-white border-slate-800" data-bs-toggle="tab" data-bs-target="#nd-{{ item.id }}">Nextdoor</button>
                             </li>
+                            <li class="nav-item">
+                                <button class="nav-link text-white border-slate-800" data-bs-toggle="tab" data-bs-target="#ig-{{ item.id }}">Instagram</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link text-white border-slate-800" data-bs-toggle="tab" data-bs-target="#tk-{{ item.id }}">TikTok</button>
+                            </li>
                         </ul>
                         <div class="tab-content p-3 bg-slate-800/30 rounded-bottom">
                             <div class="tab-pane fade show active" id="x-{{ item.id }}">
@@ -56,16 +62,38 @@
                             <div class="tab-pane fade" id="nd-{{ item.id }}">
                                 <p class="small mb-0">{{ renders[item.id].nextdoor }}</p>
                             </div>
+                            <div class="tab-pane fade" id="ig-{{ item.id }}">
+                                <p class="small mb-0">{{ renders[item.id].instagram }}</p>
+                            </div>
+                            <div class="tab-pane fade" id="tk-{{ item.id }}">
+                                <p class="small mb-0">{{ renders[item.id].tiktok }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer border-slate-800 d-flex gap-2">
-                    <form action="{{ url_for('publish_social', item_id=item.id) }}" method="post" class="w-100">
-                        <div class="btn-group w-100">
-                            <button type="submit" name="platform" value="twitter" class="btn btn-outline-primary btn-sm">Post to X</button>
-                            <button type="submit" name="platform" value="facebook" class="btn btn-outline-primary btn-sm">Post to FB</button>
-                            <button type="submit" name="platform" value="nextdoor" class="btn btn-outline-primary btn-sm">Post to ND</button>
+                <div class="card-footer border-slate-800">
+                    <form action="{{ url_for('publish_social', item_id=item.id) }}" method="post">
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6">
+                                <select name="platform" class="form-select form-select-sm bg-slate-800 text-white border-slate-700">
+                                    <option value="twitter">X / Twitter</option>
+                                    <option value="facebook">Facebook</option>
+                                    <option value="nextdoor">Nextdoor</option>
+                                    <option value="instagram">Instagram</option>
+                                    <option value="tiktok">TikTok</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <select name="media_type" class="form-select form-select-sm bg-slate-800 text-white border-slate-700">
+                                    <option value="image">Single Image</option>
+                                    <option value="video">Vertical Video</option>
+                                </select>
+                            </div>
                         </div>
+                        <button type="submit" class="btn btn-primary btn-sm w-100">
+                            <i data-feather="send" class="me-1" size="14"></i>
+                            Broadcast Now
+                        </button>
                     </form>
                 </div>
             </div>
