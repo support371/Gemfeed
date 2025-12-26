@@ -602,7 +602,7 @@ def upload_csv():
         flash('No file selected', 'error')
         return redirect(url_for('invitations'))
     
-    if not file.filename.endswith('.csv'):
+    if file.filename and not file.filename.endswith('.csv'):
         flash('Please upload a CSV file', 'error')
         return redirect(url_for('invitations'))
     
@@ -620,7 +620,7 @@ def upload_csv():
         
         # Start bulk invitation process
         manager = InvitationManager()
-        result = manager.send_bulk_invitations(contacts, file.filename)
+        result = manager.send_bulk_invitations(contacts, file.filename or "uploaded_file.csv")
         
         if result['success']:
             stats = result['stats']
