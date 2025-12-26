@@ -34,7 +34,7 @@ def get_schema():
         """,
         """
         CREATE INDEX IF NOT EXISTS idx_rss_items_date ON rss_items(date DESC)
-        """
+        """,
         """
         CREATE TABLE IF NOT EXISTS social_posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
