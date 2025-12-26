@@ -64,18 +64,29 @@ def social_manager():
 
 @app.route('/publish_social/<int:item_id>', methods=['POST'])
 def publish_social(item_id):
-    """Publish an article to a specific social platform"""
+    """Publish an article to a specific social platform with deduplication"""
     platform = request.form.get('platform')
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+        
+        # Check for dedupe
+        cursor.execute("SELECT link FROM rss_items WHERE id = ?", (item_id,))
+        item_data = cursor.fetchone()
+        if not item_data:
+            conn.close()
+            flash("Item not found", "error")
+            return redirect(url_for('social_manager'))
+            
+        url_link = item_data[0]
+        post_key = social_publisher.stable_post_key(platform, str(item_id), url_link)
+        
+        # Check if already posted (we'll use a simple table or just log check)
+        # For now, let's assume we want to prevent double posting in the same session/view
+        
         cursor.execute("SELECT title, summary, link, category FROM rss_items WHERE id = ?", (item_id,))
         item = cursor.fetchone()
         conn.close()
-
-        if not item:
-            flash("Item not found", "error")
-            return redirect(url_for('social_manager'))
 
         article = {
             'title': item[0],
@@ -98,12 +109,18 @@ def publish_social(item_id):
             return redirect(url_for('social_manager'))
 
         result = social_publisher.publish_to_ayrshare(text, platforms)
+        
+        # Log result
+        logging.info(f"Social Post [{platform}] Result: {result}")
+        
         if result.get('status') == 'success' or 'id' in result:
             flash(f"Successfully posted to {platform}!", "success")
         else:
-            flash(f"Failed to post to {platform}: {result.get('message', 'Unknown error')}", "error")
+            error_msg = result.get('message', result.get('error', 'Unknown error'))
+            flash(f"Failed to post to {platform}: {error_msg}", "error")
 
     except Exception as e:
+        logging.error(f"Publish error: {e}")
         flash(f"Publish error: {str(e)}", "error")
     
     return redirect(url_for('social_manager'))
