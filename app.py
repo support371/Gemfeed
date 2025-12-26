@@ -124,6 +124,7 @@ def publish_social(item_id):
         flash(f"Publish error: {str(e)}", "error")
     
     return redirect(url_for('social_manager'))
+@app.route('/newsletter')
 def newsletter():
     """GEM Security Newsletter - curated intelligence feed"""
     try:
