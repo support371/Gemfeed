@@ -291,6 +291,10 @@ def dashboard():
             ORDER BY date DESC, id DESC
         """)
         items = cursor.fetchall()
+
+        # Get feed count
+        cursor.execute("SELECT COUNT(*) FROM rss_feeds")
+        feed_count = cursor.fetchone()[0]
         conn.close()
 
         # Convert to list of dicts for easier template handling
@@ -308,7 +312,7 @@ def dashboard():
                 'feed_source': item[8]
             })
 
-        return render_template('dashboard.html', items=items_list)
+        return render_template('dashboard.html', items=items_list, feed_count=feed_count)
     except Exception as e:
         logging.error(f"Error in dashboard: {e}")
         flash(f"Error loading dashboard: {str(e)}", 'danger')
