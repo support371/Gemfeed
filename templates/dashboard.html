@@ -1,386 +1,207 @@
 {% extends "base.html" %}
 
-{% block title %}GEM Cybersecurity Monitoring Assist - Content Review Dashboard{% endblock %}
+{% block title %}Intelligence Dashboard - GEM Cybersecurity Assist{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-  <!-- Dashboard Hero Header -->
-  <div class="row mb-5">
-    <div class="col-12">
-      <div class="newsletter-hero rounded-4 overflow-hidden" style="background: linear-gradient(135deg, #0d1421 0%, #1a2332 40%, #2d3748 100%); position: relative;">
-        <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,193,7,0.1) 35px, rgba(255,193,7,0.1) 70px);">
-        </div>
-        
-        <div class="position-relative p-5" style="z-index: 2;">
-          <div class="row align-items-center">
-            <div class="col-lg-8">
-              <div class="d-flex align-items-center mb-3">
-                <div class="p-3 bg-warning bg-opacity-25 rounded-3 me-3">
-                  <i data-feather="shield" class="text-warning" size="48"></i>
+<div class="container-fluid py-4 bg-slate-950 text-white min-vh-100">
+    <!-- Top Stats Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-slate-900 border-slate-800 p-4 rounded-4 shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="p-2 bg-primary/10 rounded">
+                        <i data-feather="activity" class="text-primary"></i>
+                    </div>
+                    <span class="badge bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">LIVE</span>
                 </div>
-                <div>
-                  <h1 class="display-5 fw-bold mb-2 text-white">
-                    <span class="text-warning">GEM</span> Cybersecurity Monitoring Assist
-                  </h1>
-                  <p class="lead mb-0 text-light opacity-75">
-                    Real-time Security Intelligence & Content Review Dashboard
-                  </p>
+                <h3 class="fw-bold mb-1" id="totalItemsCount">{{ items|length }}</h3>
+                <p class="text-slate-500 small mb-0">Total Intelligence Items</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-slate-900 border-slate-800 p-4 rounded-4 shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="p-2 bg-warning/10 rounded">
+                        <i data-feather="clock" class="text-warning"></i>
+                    </div>
                 </div>
-              </div>
+                <h3 class="fw-bold mb-1" id="pendingReviewCount">{{ items|selectattr("approved", "equalto", 0)|list|length }}</h3>
+                <p class="text-slate-500 small mb-0">Awaiting Curation</p>
             </div>
-            <div class="col-lg-4">
-              <div class="row g-3 text-center">
-                <div class="col-6">
-                  <div class="bg-dark bg-opacity-50 p-3 rounded">
-                    <h3 class="text-warning mb-1">{{ items|length }}</h3>
-                    <small class="text-light">Total Items</small>
-                  </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-slate-900 border-slate-800 p-4 rounded-4 shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="p-2 bg-success/10 rounded">
+                        <i data-feather="send" class="text-success"></i>
+                    </div>
                 </div>
-                <div class="col-6">
-                  <div class="bg-dark bg-opacity-50 p-3 rounded">
-                    <h3 class="text-danger mb-1">{{ items|selectattr("approved", "equalto", 0)|list|length }}</h3>
-                    <small class="text-light">Pending Review</small>
-                  </div>
+                <h3 class="fw-bold mb-1" id="broadcastedCount">{{ items|selectattr("approved", "equalto", 1)|list|length }}</h3>
+                <p class="text-slate-500 small mb-0">Broadcasts Sent</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-slate-900 border-slate-800 p-4 rounded-4 shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="p-2 bg-info/10 rounded">
+                        <i data-feather="rss" class="text-info"></i>
+                    </div>
                 </div>
-              </div>
+                <h3 class="fw-bold mb-1" id="activeFeedsCount">12</h3>
+                <p class="text-slate-500 small mb-0">Active Intelligence Feeds</p>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Services Overview -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="card border-0 shadow-lg bg-gradient" style="background: linear-gradient(135deg, rgba(255,193,7,0.1), rgba(13,110,253,0.05));">
-        <div class="card-body p-4">
-          <h4 class="mb-4">
-            <i data-feather="activity" class="me-2 text-warning"></i>
-            GEM Monitoring Services
-          </h4>
-          <div class="row g-3">
-            <div class="col-md-3">
-              <div class="service-card p-3 h-100 bg-white rounded shadow-sm border-start border-4 border-danger">
-                <i data-feather="alert-triangle" class="text-danger mb-2" size="24"></i>
-                <h6 class="fw-bold">Threat Detection</h6>
-                <small class="text-muted">Real-time vulnerability scanning</small>
-              </div>
+    <div class="row g-4">
+        <!-- Main Feed Column -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold mb-0 d-flex align-items-center gap-2">
+                    <i data-feather="shield" class="text-primary"></i> Review Queue
+                </h4>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-slate-800 active">All</button>
+                    <button class="btn btn-slate-800">High Priority</button>
+                    <button class="btn btn-slate-800">Critical</button>
+                </div>
             </div>
-            <div class="col-md-3">
-              <div class="service-card p-3 h-100 bg-white rounded shadow-sm border-start border-4 border-warning">
-                <i data-feather="trending-up" class="text-warning mb-2" size="24"></i>
-                <h6 class="fw-bold">Trend Analysis</h6>
-                <small class="text-muted">Industry security patterns</small>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="service-card p-3 h-100 bg-white rounded shadow-sm border-start border-4 border-info">
-                <i data-feather="globe" class="text-info mb-2" size="24"></i>
-                <h6 class="fw-bold">Global Intelligence</h6>
-                <small class="text-muted">Worldwide threat monitoring</small>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="service-card p-3 h-100 bg-white rounded shadow-sm border-start border-4 border-success">
-                <i data-feather="check-circle" class="text-success mb-2" size="24"></i>
-                <h6 class="fw-bold">Content Curation</h6>
-                <small class="text-muted">AI-powered review & approval</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Filter & Search Bar -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body p-4">
-          <div class="row g-3 align-items-center">
-            <div class="col-md-6">
-              <div class="input-group">
-                <span class="input-group-text bg-light border-0">
-                  <i data-feather="search" class="text-muted" size="20"></i>
-                </span>
-                <input type="text" class="form-control border-0 bg-light" placeholder="Search articles..." id="searchInput">
-              </div>
+            <div class="space-y-4" id="intelligenceFeed">
+                {% for item in items if not item.approved %}
+                <div class="card bg-slate-900 border-slate-800 rounded-4 overflow-hidden mb-4 intelligence-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="badge bg-slate-800 text-slate-400 border border-slate-700">
+                                {{ item.feed_source or 'Security Intel' }}
+                            </span>
+                            <span class="text-slate-500 small">{{ item.date }}</span>
+                        </div>
+                        <h5 class="fw-bold mb-2">{{ item.title }}</h5>
+                        <p class="text-slate-400 mb-4 small">{{ item.summary[:200] }}...</p>
+                        
+                        {% if item.ai_suggestion %}
+                        <div class="bg-primary/5 border border-primary/10 rounded-3 p-3 mb-4">
+                            <div class="d-flex align-items-center gap-2 mb-2 text-primary">
+                                <i data-feather="cpu" size="14"></i>
+                                <span class="small fw-bold uppercase">AI ANALYSIS</span>
+                            </div>
+                            <p class="text-slate-300 small mb-0">{{ item.ai_suggestion }}</p>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex gap-2">
+                            <form action="{{ url_for('approve_item', item_id=item.id) }}" method="post" class="flex-grow-1">
+                                <button type="submit" class="btn btn-primary w-100 btn-sm">
+                                    <i data-feather="check" class="me-2" size="16"></i> Approve & Broadcast
+                                </button>
+                            </form>
+                            <form action="{{ url_for('reject_item', item_id=item.id) }}" method="post">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i data-feather="trash-2" size="16"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-3 text-slate-700">
+                        <i data-feather="check-circle" size="64"></i>
+                    </div>
+                    <h5 class="text-slate-500">Review Queue Clear</h5>
+                    <p class="text-slate-600 small">Everything is processed for today.</p>
+                </div>
+                {% endfor %}
             </div>
-            <div class="col-md-6">
-              <div class="d-flex gap-2 flex-wrap">
-                <button class="btn btn-sm btn-outline-secondary category-btn active" data-category="all">
-                  <i data-feather="globe" size="16" class="me-1"></i> All
-                </button>
-                <button class="btn btn-sm btn-outline-secondary category-btn" data-category="Cybersecurity">
-                  <i data-feather="shield" size="16" class="me-1"></i> Security
-                </button>
-                <button class="btn btn-sm btn-outline-secondary category-btn" data-category="pending">
-                  <i data-feather="clock" size="16" class="me-1"></i> Pending
-                </button>
-                <button class="btn btn-sm btn-outline-secondary category-btn" data-category="approved">
-                  <i data-feather="check-circle" size="16" class="me-1"></i> Approved
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {% if not items %}
-  <!-- Empty State -->
-  <div class="row">
-    <div class="col-12">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body text-center py-5">
-          <div class="mb-4">
-            <div class="d-inline-flex p-4 bg-warning bg-opacity-10 rounded-circle">
-              <i data-feather="inbox" size="64" class="text-warning"></i>
-            </div>
-          </div>
-          <h3 class="text-muted mb-3">No Security Intelligence Items Found</h3>
-          <p class="text-muted mb-4">
-            Start monitoring by adding RSS feeds and refreshing to collect real-time security intelligence.
-          </p>
-          <div class="d-flex gap-3 justify-content-center">
-            <a href="{{ url_for('manage_feeds') }}" class="btn btn-warning btn-lg">
-              <i data-feather="plus-circle" class="me-2"></i>
-              Add Security Feeds
-            </a>
-            <form action="{{ url_for('refresh_feeds') }}" method="post" class="d-inline">
-              <button type="submit" class="btn btn-outline-secondary btn-lg">
-                <i data-feather="refresh-cw" class="me-2"></i>
-                Refresh Intelligence
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  {% else %}
-
-  <!-- Items Grid -->
-  <div class="row">
-    <div class="col-12 mb-4">
-      <h3 class="fw-bold">
-        <i data-feather="file-text" class="text-warning me-2"></i>Intelligence Review Queue
-      </h3>
-      <small class="text-muted">
-        {{ items|selectattr("approved", "equalto", 1)|list|length }} Published • 
-        {{ items|selectattr("approved", "equalto", 0)|list|length }} Awaiting Approval
-      </small>
-    </div>
-  </div>
-
-  <div class="row g-4" id="articlesGrid">
-    {% for item in items %}
-    <div class="col-lg-4 col-md-6 dashboard-card-wrapper" data-category="{% if item.approved %}approved{% else %}pending{% endif %}" data-title="{{ item.title|lower }}" data-type="{{ item.category|lower }}">
-      <div class="card h-100 border-0 shadow-sm overflow-hidden newsletter-card transition-all {% if item.approved %}border-success border-2{% endif %}">
-        <!-- Header Image Section -->
-        <div class="position-relative overflow-hidden" style="height: 180px; background: linear-gradient(135deg, 
-          {% if 'vulnerability' in item.category.lower() or 'threat' in item.category.lower() %}#dc3545, #e35d6a
-          {% elif 'compliance' in item.category.lower() %}#198754, #1e9d60
-          {% elif 'tech' in item.category.lower() %}#0d6efd, #3d8bfd
-          {% else %}#6f42c1, #8662d8{% endif %});">
-          
-          <!-- Icon -->
-          <div class="position-absolute inset-0 d-flex align-items-center justify-content-center">
-            <div class="text-center text-white">
-              <i data-feather="{% if 'vulnerability' in item.category.lower() %}alert-octagon{% elif 'threat' in item.category.lower() %}shield-off{% elif 'compliance' in item.category.lower() %}check-square{% else %}shield{% endif %}" size="64" class="mb-2 opacity-75"></i>
-            </div>
-          </div>
-
-          <!-- Status Badge -->
-          <div class="position-absolute top-2 start-2">
-            {% if item.approved %}
-            <span class="badge bg-success shadow">
-              <i data-feather="check-circle" size="12"></i> Published
-            </span>
-            {% else %}
-            <span class="badge bg-warning text-dark shadow">
-              <i data-feather="clock" size="12"></i> Pending
-            </span>
-            {% endif %}
-          </div>
-
-          <!-- Category Badge -->
-          <div class="position-absolute bottom-2 start-2">
-            <span class="badge bg-dark bg-opacity-75 px-2 py-1">
-              <i data-feather="tag" size="12" class="me-1"></i>
-              {{ item.category }}
-            </span>
-          </div>
-
-          <!-- Pattern Overlay -->
-          <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px);"></div>
         </div>
 
-        <div class="card-body d-flex flex-column">
-          <!-- Meta Info -->
-          <div class="mb-2 d-flex justify-content-between align-items-start">
-            <div>
-              {% if item.feed_source %}
-              <small class="badge bg-info bg-opacity-25 text-info">
-                <i data-feather="rss" size="12" class="me-1"></i>
-                {{ item.feed_source }}
-              </small>
-              {% endif %}
+        <!-- Sidebar Widgets -->
+        <div class="col-lg-4">
+            <!-- System Health -->
+            <div class="card bg-slate-900 border-slate-800 rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-4 uppercase small text-slate-500 tracking-wider">System Health</h6>
+                    <div class="space-y-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="small">Feed Pipeline</div>
+                            <span class="text-emerald-500 small">Healthy</span>
+                        </div>
+                        <div class="progress bg-slate-800" style="height: 4px;">
+                            <div class="progress-bar bg-emerald-500" style="width: 100%"></div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+                            <div class="small">AI Generator</div>
+                            <span class="text-emerald-500 small">Ready</span>
+                        </div>
+                        <div class="progress bg-slate-800" style="height: 4px;">
+                            <div class="progress-bar bg-emerald-500" style="width: 100%"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+                            <div class="small">Social API</div>
+                            <span class="text-emerald-500 small">Connected</span>
+                        </div>
+                        <div class="progress bg-slate-800" style="height: 4px;">
+                            <div class="progress-bar bg-emerald-500" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="rating-stars small">
-              <i data-feather="star" size="14" class="text-warning" style="fill: currentColor;"></i>
-              <i data-feather="star" size="14" class="text-warning" style="fill: currentColor;"></i>
-              <i data-feather="star" size="14" class="text-warning" style="fill: currentColor;"></i>
-              <i data-feather="star" size="14" class="text-warning" style="fill: currentColor;"></i>
-              <i data-feather="star" size="14" class="text-muted" style="fill: currentColor;"></i>
+
+            <!-- Recent Broadcasts -->
+            <div class="card bg-slate-900 border-slate-800 rounded-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-4 uppercase small text-slate-500 tracking-wider">Recent Broadcasts</h6>
+                    <div class="space-y-4">
+                        {% for item in items if item.approved %}
+                        <div class="border-bottom border-slate-800 pb-3 mb-3 last:border-0">
+                            <div class="d-flex gap-3 align-items-start">
+                                <div class="p-2 bg-slate-800 rounded">
+                                    <i data-feather="check-circle" class="text-success" size="14"></i>
+                                </div>
+                                <div>
+                                    <div class="small fw-bold text-slate-300 mb-1">{{ item.title[:50] }}...</div>
+                                    <div class="text-slate-500" style="font-size: 10px;">{{ item.date }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-          </div>
-
-          <!-- Title -->
-          <h6 class="card-title fw-bold mb-2" style="line-height: 1.4;">
-            <a href="{{ item.link }}" target="_blank" class="text-decoration-none text-dark">
-              {{ item.title[:80] }}{% if item.title|length > 80 %}...{% endif %}
-            </a>
-          </h6>
-
-          <!-- Summary -->
-          <p class="card-text text-muted small flex-grow-1">
-            {{ item.summary[:120] }}{% if item.summary|length > 120 %}...{% endif %}
-          </p>
-
-          <!-- AI Insight -->
-          <div class="mb-3 pb-3 border-bottom">
-            {% if item.ai_suggestion %}
-            <div class="alert alert-info border-0 p-2 mb-0">
-              <small class="d-flex align-items-start">
-                <i data-feather="cpu" class="me-2 text-info flex-shrink-0" size="14"></i>
-                <span>{{ item.ai_suggestion[:80] }}{% if item.ai_suggestion|length > 80 %}...{% endif %}</span>
-              </small>
-            </div>
-            {% else %}
-            <button class="btn btn-outline-info btn-sm w-100 generate-suggestion" data-item-id="{{ item.id }}">
-              <i data-feather="cpu" class="me-1" size="14"></i>
-              Generate AI Analysis
-            </button>
-            {% endif %}
-          </div>
-
-          <!-- Action Buttons -->
-          {% if not item.approved %}
-          <div class="d-flex gap-2">
-            <form action="{{ url_for('approve_item') }}" method="post" class="flex-grow-1">
-              <input type="hidden" name="item_id" value="{{ item.id }}">
-              <button type="submit" class="btn btn-success w-100 btn-sm d-flex align-items-center justify-content-center">
-                <i data-feather="send" class="me-1" size="14"></i>
-                Publish & Send
-              </button>
-            </form>
-            <form action="{{ url_for('reject_item') }}" method="post">
-              <input type="hidden" name="item_id" value="{{ item.id }}">
-              <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Remove this item?')" title="Reject">
-                <i data-feather="trash-2" size="14"></i>
-              </button>
-            </form>
-          </div>
-          {% else %}
-          <a href="{{ item.link }}" target="_blank" class="btn btn-outline-primary w-100 btn-sm">
-            <i data-feather="external-link" class="me-1" size="14"></i>
-            View Full Article
-          </a>
-          {% endif %}
         </div>
-      </div>
     </div>
-    {% endfor %}
-  </div>
-
-  {% endif %}
 </div>
 
-<!-- Loading Modal -->
-<div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-  <div class="modal-dialog modal-sm modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-body text-center p-4">
-        <div class="spinner-border text-warning mb-3" role="status" style="width: 3rem; height: 3rem;">
-          <span class="visually-hidden">Analyzing...</span>
-        </div>
-        <h6 class="text-muted">AI Analysis in Progress</h6>
-        <small class="text-muted">Generating security insights...</small>
-      </div>
-    </div>
-  </div>
-</div>
+<style>
+    .bg-slate-950 { background-color: #020617 !important; }
+    .bg-slate-900 { background-color: #0f172a !important; }
+    .bg-slate-800 { background-color: #1e293b !important; }
+    .border-slate-800 { border-color: #1e293b !important; }
+    .border-slate-700 { border-color: #334155 !important; }
+    .text-slate-400 { color: #94a3b8 !important; }
+    .text-slate-500 { color: #64748b !important; }
+    .text-slate-600 { color: #475569 !important; }
+    .text-slate-700 { color: #334155 !important; }
+    
+    .intelligence-card {
+        transition: transform 0.2s, border-color 0.2s;
+    }
+    .intelligence-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(59, 130, 246, 0.3) !important;
+    }
 
-<!-- Dashboard Scripts -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Category Filtering
-  const categoryBtns = document.querySelectorAll('.category-btn');
-  const articleCards = document.querySelectorAll('.dashboard-card-wrapper');
-
-  categoryBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-      const selectedCategory = this.dataset.category;
-
-      // Update active button
-      categoryBtns.forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-
-      // Filter articles
-      articleCards.forEach(card => {
-        const cardCategory = card.dataset.category;
-        if (selectedCategory === 'all' || cardCategory === selectedCategory) {
-          card.style.display = '';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    });
-  });
-
-  // Search Functionality
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    searchInput.addEventListener('input', function() {
-      const searchTerm = this.value.toLowerCase();
-
-      articleCards.forEach(card => {
-        const title = card.dataset.title;
-        if (title.includes(searchTerm) || searchTerm === '') {
-          card.style.display = '';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    });
-  }
-
-  // Generate AI Suggestion
-  document.querySelectorAll('.generate-suggestion').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const itemId = this.dataset.itemId;
-      const modal = new bootstrap.Modal(document.getElementById('loadingModal'));
-      modal.show();
-
-      fetch(`/generate_suggestion/${itemId}`)
-        .then(response => response.json())
-        .then(data => {
-          modal.hide();
-          if (data.success) {
-            location.reload();
-          }
-        })
-        .catch(error => {
-          modal.hide();
-          alert('Error generating suggestion: ' + error);
-        });
-    });
-  });
-});
-</script>
-
+    .btn-slate-800 {
+        background-color: #1e293b;
+        color: #94a3b8;
+        border: 1px solid #334155;
+    }
+    .btn-slate-800.active {
+        background-color: #334155;
+        color: #fff;
+    }
+</style>
 {% endblock %}
