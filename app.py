@@ -11,11 +11,6 @@ from inviter.telegram_client import TelegramClient
 from inviter.config import validate_config
 # --- End new imports ---
 
-# --- Social Publisher Imports ---
-import social_publisher
-import media_generator
-# --- End Social Publisher Imports ---
-
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -29,253 +24,6 @@ init_db()
 def landing():
     """Official landing page showcasing the RSS curation system"""
     return render_template('landing.html')
-
-@app.route('/social')
-def social_page():
-    """Flexible Social Distribution page"""
-    return render_template('social_distribution.html')
-
-@app.route('/api/social/logs')
-def api_social_logs():
-    """Read-only social logs endpoint"""
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT platform, content_id, status, external_post_id, posted_at, error FROM social_posts ORDER BY posted_at DESC LIMIT 50")
-        logs = cursor.fetchall()
-        conn.close()
-        
-        log_list = []
-        for log in logs:
-            log_list.append({
-                'platform': log[0],
-                'content_id': log[1],
-                'status': log[2],
-                'external_id': log[3],
-                'posted_at': log[4],
-                'error': log[5]
-            })
-        return jsonify({'logs': log_list})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/social-manager')
-def social_manager():
-    """Manage social media distribution via Ayrshare"""
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, title, summary, link, category, date FROM rss_items WHERE approved = 1 ORDER BY date DESC LIMIT 20")
-        items = cursor.fetchall()
-        conn.close()
-
-        items_list = []
-        renders = {}
-        for item in items:
-            item_dict = {
-                'id': item[0],
-                'title': item[1],
-                'summary': item[2],
-                'link': item[3],
-                'category': item[4],
-                'date': item[5]
-            }
-            items_list.append(item_dict)
-            renders[item[0]] = {
-                'x': social_publisher.render_x(item_dict),
-                'facebook': social_publisher.render_facebook(item_dict),
-                'nextdoor': social_publisher.render_nextdoor(item_dict),
-                'instagram': social_publisher.render_instagram(item_dict),
-                'tiktok': social_publisher.render_tiktok(item_dict)
-            }
-
-        return render_template('social_manager.html', items=items_list, renders=renders)
-    except Exception as e:
-        logging.error(f"Social manager error: {e}")
-        return render_template('social_manager.html', items=[], renders={})
-
-@app.route('/publish_social/<int:item_id>', methods=['POST'])
-def publish_social(item_id):
-    """Publish an article to a specific social platform with media support and deduplication"""
-    platform = request.form.get('platform')
-    media_type = request.form.get('media_type', 'image') # Default to image
-    
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
-        # Check for dedupe
-        cursor.execute("SELECT id, title, summary, link, category FROM rss_items WHERE id = ?", (item_id,))
-        item_data = cursor.fetchone()
-        if not item_data:
-            conn.close()
-            flash("Item not found", "error")
-            return redirect(url_for('social_manager'))
-            
-        article = {
-            'id': item_data[0],
-            'title': item_data[1],
-            'summary': item_data[2],
-            'link': item_data[3],
-            'category': item_data[4]
-        }
-        
-        # Persistence check
-        cursor.execute("SELECT external_post_id FROM social_posts WHERE platform = ? AND content_id = ? AND status = 'success'", 
-                      (platform, str(item_id)))
-        if cursor.fetchone():
-            conn.close()
-            flash(f"Already posted to {platform}!", "warning")
-            return redirect(url_for('social_manager'))
-
-        # Prepare payload based on platform
-        media_urls = []
-        if media_type == 'video':
-            media_urls = [media_generator.make_video(article)]
-        else:
-            media_urls = [media_generator.make_image(article)]
-
-        if platform == 'twitter':
-            text = social_publisher.render_x(article)
-            platforms = ["twitter"]
-        elif platform == 'facebook':
-            text = social_publisher.render_facebook(article)
-            platforms = ["facebook"]
-        elif platform == 'nextdoor':
-            text = social_publisher.render_nextdoor(article)
-            platforms = ["nextdoor"]
-        elif platform == 'instagram':
-            text = social_publisher.render_instagram(article)
-            platforms = ["instagram"]
-        elif platform == 'tiktok':
-            text = social_publisher.render_tiktok(article)
-            platforms = ["tiktok"]
-            if media_type != 'video':
-                flash("TikTok requires video media.", "error")
-                conn.close()
-                return redirect(url_for('social_manager'))
-        else:
-            conn.close()
-            flash("Invalid platform", "error")
-            return redirect(url_for('social_manager'))
-
-        result = social_publisher.publish_to_ayrshare(text, platforms, media_urls=media_urls)
-        
-        # Log result in DB
-        status = 'success' if (result.get('status') == 'success' or 'id' in result) else 'error'
-        ext_id = str(result.get('id', ''))
-        error_msg = result.get('message', '') if status == 'error' else None
-        
-        cursor.execute("""
-            INSERT INTO social_posts (platform, content_id, status, external_post_id, error)
-            VALUES (?, ?, ?, ?, ?)
-        """, (platform, str(item_id), status, ext_id, error_msg))
-        conn.commit()
-        conn.close()
-
-        if status == 'success':
-            flash(f"Successfully posted to {platform}!", "success")
-        else:
-            flash(f"Failed to post to {platform}: {error_msg or 'Unknown error'}", "error")
-
-    except Exception as e:
-        logging.error(f"Publish error: {e}")
-        flash(f"Publish error: {str(e)}", "error")
-    
-    return redirect(url_for('social_manager'))
-@app.route('/newsletter')
-def newsletter():
-    """GEM Security Newsletter - curated intelligence feed"""
-    try:
-        page = request.args.get('page', 1, type=int)
-        per_page = 12
-        offset = (page - 1) * per_page
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        # Calculate quality score (higher for recent, approved, from trusted sources)
-        cursor.execute("""
-            SELECT id, title, summary, link, category, date, approved, feed_source, quality_score
-            FROM rss_items 
-            WHERE category IN ('Cybersecurity', 'Tech', 'Finance', 'Business')
-            ORDER BY 
-                CASE WHEN approved = 1 THEN 0 ELSE 1 END,
-                CASE WHEN date LIKE '2025%' THEN 0 ELSE 1 END,
-                date DESC, 
-                id DESC
-            LIMIT ? OFFSET ?
-        """, (per_page, offset))
-        
-        articles = cursor.fetchall()
-
-        # Get total count
-        cursor.execute("SELECT COUNT(*) FROM rss_items")
-        total_articles = cursor.fetchone()[0]
-
-        # Get featured articles (approved + high quality)
-        cursor.execute("""
-            SELECT id, title, summary, link, category, date, approved, feed_source, quality_score
-            FROM rss_items 
-            WHERE approved = 1 AND quality_score >= 7
-            ORDER BY date DESC
-            LIMIT 3
-        """)
-        featured = cursor.fetchall()
-
-        conn.close()
-
-        # Convert to dicts for template
-        articles_list = []
-        for article in articles:
-            articles_list.append({
-                'id': article[0],
-                'title': article[1],
-                'summary': article[2],
-                'link': article[3],
-                'category': article[4],
-                'date': article[5],
-                'approved': article[6],
-                'feed_source': article[7],
-                'quality_score': article[8] or 5,
-                'image_url': f"https://images.unsplash.com/photo-{1550751827 + article[0]}?auto=format&fit=crop&q=80&w=800",
-                'time_ago': '2h ago'  # This could be calculated from date
-            })
-
-        featured_list = []
-        for article in featured:
-            featured_list.append({
-                'id': article[0],
-                'title': article[1],
-                'summary': article[2],
-                'link': article[3],
-                'category': article[4],
-                'date': article[5],
-                'approved': article[6],
-                'feed_source': article[7],
-                'quality_score': article[8] or 5,
-                'image_url': f"https://images.unsplash.com/photo-{1550751827 + article[0]}?auto=format&fit=crop&q=80&w=800",
-                'time_ago': '2h ago'
-            })
-
-        total_pages = (total_articles + per_page - 1) // per_page
-
-        return render_template('newsletter.html', 
-                             articles=articles_list,
-                             featured_articles=featured_list,
-                             total_articles=total_articles,
-                             featured_count=len(featured_list),
-                             current_page=page,
-                             total_pages=total_pages)
-    except Exception as e:
-        logging.error(f"Error in newsletter: {e}")
-        return render_template('newsletter.html', 
-                             articles=[],
-                             featured_articles=[],
-                             total_articles=0,
-                             featured_count=0,
-                             current_page=1,
-                             total_pages=1)
 
 @app.route('/dashboard')
 def dashboard():
@@ -291,10 +39,6 @@ def dashboard():
             ORDER BY date DESC, id DESC
         """)
         items = cursor.fetchall()
-
-        # Get feed count
-        cursor.execute("SELECT COUNT(*) FROM rss_feeds")
-        feed_count = cursor.fetchone()[0]
         conn.close()
 
         # Convert to list of dicts for easier template handling
@@ -312,7 +56,7 @@ def dashboard():
                 'feed_source': item[8]
             })
 
-        return render_template('dashboard.html', items=items_list, feed_count=feed_count)
+        return render_template('dashboard.html', items=items_list)
     except Exception as e:
         logging.error(f"Error in dashboard: {e}")
         flash(f"Error loading dashboard: {str(e)}", 'danger')
@@ -347,8 +91,8 @@ def generate_suggestion(item_id):
         logging.error(f"Error generating suggestion: {e}")
         return jsonify({'error': str(e)}), 500
 
-@app.route('/approve_item/<int:item_id>', methods=['POST'])
-def approve_item(item_id):
+@app.route('/approve/<int:item_id>', methods=['POST'])
+def approve(item_id):
     """Approve an item and send to Telegram"""
     try:
         conn = get_db_connection()
@@ -386,8 +130,8 @@ def approve_item(item_id):
         flash(f'Error approving item: {str(e)}', 'danger')
         return redirect(url_for('dashboard'))
 
-@app.route('/reject_item/<int:item_id>', methods=['POST'])
-def reject_item(item_id):
+@app.route('/reject/<int:item_id>', methods=['POST'])
+def reject(item_id):
     """Reject an item (delete it)"""
     try:
         conn = get_db_connection()
@@ -447,20 +191,10 @@ def remove_feed(feed_id):
 
 @app.route('/refresh_feeds', methods=['POST'])
 def refresh_feeds():
-    """Manually refresh all RSS feeds and Newsdata.io"""
+    """Manually refresh all RSS feeds"""
     try:
-        # Refresh RSS feeds
         new_items = parse_feeds()
-        
-        # Import from Newsdata.io
-        from newsdata_api import NewsdataAPI
-        newsdata = NewsdataAPI()
-        conn = get_db_connection()
-        newsdata_items = newsdata.import_to_database(conn)
-        conn.close()
-        
-        total_items = new_items + newsdata_items
-        flash(f'Feeds refreshed! Found {new_items} RSS items and {newsdata_items} Newsdata.io articles. Total: {total_items} new items.', 'success')
+        flash(f'Feeds refreshed! Found {new_items} new items.', 'success')
     except Exception as e:
         logging.error(f"Error refreshing feeds: {e}")
         flash(f'Error refreshing feeds: {str(e)}', 'danger')
@@ -565,36 +299,6 @@ def invite_single():
             try:
                 conn.execute('''
                     INSERT OR REPLACE INTO invitations 
-
-
-@app.route('/get-live-news')
-def get_live_news():
-    """API endpoint for fetching live news from Newsdata.io"""
-    try:
-        from newsdata_api import NewsdataAPI
-        
-        newsdata = NewsdataAPI()
-        articles = newsdata.fetch_cybersecurity_news()
-        
-        if articles:
-            return jsonify({
-                'status': 'success',
-                'totalResults': len(articles),
-                'results': articles
-            })
-        else:
-            return jsonify({
-                'status': 'error',
-                'message': 'No articles found or API error'
-            }), 500
-            
-    except Exception as e:
-        logging.error(f"Error in get-live-news endpoint: {e}")
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
-
                     (name, email, entity, region, invite_link, status, sent_at) 
                     VALUES (?, ?, ?, ?, ?, 'sent', CURRENT_TIMESTAMP)
                 ''', (name, email, entity, region, invite_link))
@@ -635,7 +339,7 @@ def upload_csv():
         flash('No file selected', 'error')
         return redirect(url_for('invitations'))
     
-    if file.filename and not file.filename.endswith('.csv'):
+    if not file.filename.endswith('.csv'):
         flash('Please upload a CSV file', 'error')
         return redirect(url_for('invitations'))
     
@@ -653,7 +357,7 @@ def upload_csv():
         
         # Start bulk invitation process
         manager = InvitationManager()
-        result = manager.send_bulk_invitations(contacts, file.filename or "uploaded_file.csv")
+        result = manager.send_bulk_invitations(contacts, file.filename)
         
         if result['success']:
             stats = result['stats']
@@ -689,16 +393,6 @@ def test_inviter():
         flash(f"❌ Error testing invitation system: {str(e)}", "error")
 
     return redirect(url_for('invitations'))
-
-@app.route('/project')
-def project_overview():
-    """Project overview page for Telegram Bot Automation & Channel Growth System"""
-    return render_template('project_overview.html')
-
-@app.route('/gem-assist')
-def gem_assist():
-    """GEM Assist features and information page"""
-    return render_template('gem_assist.html')
 
 @app.route('/news')
 def news():
@@ -811,24 +505,11 @@ def subscribe_newsletter():
 def refresh_news():
     """Refresh news feed (similar to refresh_feeds but returns JSON)"""
     try:
-        # Refresh RSS feeds
         new_items = parse_feeds()
-        
-        # Import from Newsdata.io
-        from newsdata_api import NewsdataAPI
-        newsdata = NewsdataAPI()
-        conn = get_db_connection()
-        newsdata_items = newsdata.import_to_database(conn)
-        conn.close()
-        
-        total_items = new_items + newsdata_items
-        
         return jsonify({
             'success': True, 
-            'message': f'Found {new_items} RSS items and {newsdata_items} Newsdata.io articles',
-            'new_items': total_items,
-            'rss_items': new_items,
-            'newsdata_items': newsdata_items
+            'message': f'Found {new_items} new items',
+            'new_items': new_items
         })
     except Exception as e:
         logging.error(f"Error refreshing news: {e}")

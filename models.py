@@ -23,9 +23,6 @@ def get_schema():
             approved INTEGER DEFAULT 0,
             ai_suggestion TEXT,
             feed_source TEXT,
-            quality_score INTEGER DEFAULT 5,
-            image_url TEXT,
-            time_ago TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """,
@@ -34,19 +31,5 @@ def get_schema():
         """,
         """
         CREATE INDEX IF NOT EXISTS idx_rss_items_date ON rss_items(date DESC)
-        """,
-        """
-        CREATE TABLE IF NOT EXISTS social_posts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            platform TEXT NOT NULL,
-            content_id TEXT NOT NULL,
-            status TEXT DEFAULT 'pending',
-            external_post_id TEXT,
-            posted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            error TEXT
-        )
-        """,
-        """
-        CREATE INDEX IF NOT EXISTS idx_social_posts_dedupe ON social_posts(platform, content_id)
         """
     ]

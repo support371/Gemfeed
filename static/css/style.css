@@ -85,7 +85,7 @@ footer {
     .card-body {
         padding: 1rem;
     }
-
+    
     .btn-group-vertical .btn {
         margin-bottom: 0.25rem;
     }
@@ -119,74 +119,6 @@ footer {
     background-color: rgba(var(--bs-info-rgb), 0.1);
     color: var(--bs-info);
     border-left: 4px solid var(--bs-info);
-}
-
-/* Newsletter Page Enhancements */
-.newsletter-hero {
-    min-height: 280px;
-    display: flex;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.newsletter-card {
-    border: 1px solid rgba(255, 193, 7, 0.1);
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.newsletter-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 24px rgba(255, 193, 7, 0.15) !important;
-    border-color: rgba(255, 193, 7, 0.3);
-}
-
-.featured-card {
-    border: 2px solid rgba(255, 193, 7, 0.2);
-    position: relative;
-}
-
-.featured-card:hover {
-    border-color: rgba(255, 193, 7, 0.5);
-}
-
-.quality-badge {
-    z-index: 10;
-    animation: fadeIn 0.5s ease-in;
-}
-
-.rating-stars {
-    display: flex;
-    gap: 2px;
-}
-
-.btn-primary-custom {
-    background-color: #ffc107;
-    color: #000;
-    border-color: #ffc107;
-    font-weight: 600;
-}
-
-.btn-primary-custom:hover {
-    background-color: #ffb300;
-    border-color: #ffb300;
-    color: #000;
-}
-
-.category-btn {
-    transition: all 0.2s ease;
-}
-
-.category-btn.active {
-    background-color: #ffc107;
-    color: #000;
-    border-color: #ffc107;
-    font-weight: 600;
-}
-
-.category-btn:hover {
-    background-color: rgba(255, 193, 7, 0.1);
-    border-color: #ffc107;
 }
 
 /* Navigation enhancements */
@@ -335,7 +267,7 @@ a:hover {
     transform: scale(1.02);
 }
 
-/* GEM Assist Brand Styling */
+/* Brand specific styling */
 .navbar-brand {
     font-size: 1.4rem;
 }
@@ -343,24 +275,6 @@ a:hover {
 .navbar-brand .fw-bold {
     color: var(--bs-warning);
 }
-
-.gem-logo-container {
-    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
-    transition: all 0.3s ease;
-}
-
-.gem-logo-container:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
-}
-
-/* GEM Assist color scheme */
-.text-gem-gold { color: #ffc107; }
-.bg-gem-gold { background-color: #ffc107; }
-.border-gem-gold { border-color: #ffc107; }
-
-.text-gem-dark { color: #0d1421; }
-.bg-gem-dark { background-color: #0d1421; }
 
 /* News section specific styles */
 .news-card {
@@ -435,11 +349,11 @@ a:hover {
     .news-card {
         margin-bottom: 1.5rem;
     }
-
+    
     #newsletterForm {
         padding: 1.5rem;
     }
-
+    
     .hero-section h1 {
         font-size: 2rem;
     }
@@ -468,169 +382,4 @@ a:hover {
 @keyframes spin {
     0% { transform: translate(-50%, -50%) rotate(0deg); }
     100% { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-/* Dashboard enhancements */
-.card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-/* GEM Dashboard Branding */
-.dashboard-hero {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 193, 7, 0.2);
-}
-
-.service-card {
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Professional News Preview Cards */
-.news-preview-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.news-preview-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2) !important;
-}
-
-.news-image-header {
-    position: relative;
-    overflow: hidden;
-}
-
-.news-image-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 50%;
-    background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
-    pointer-events: none;
-}
-
-.news-preview-card .card-title a {
-    transition: color 0.3s ease;
-}
-
-.news-preview-card .card-title a:hover {
-    color: var(--bs-warning) !important;
-    text-decoration: none;
-}
-
-/* AI Insight Styling */
-.ai-insight .alert {
-    background: linear-gradient(135deg, rgba(13, 110, 253, 0.08), rgba(13, 202, 240, 0.08));
-    border-left: 3px solid var(--bs-info);
-}
-
-/* Professional gradient backgrounds */
-.bg-gradient {
-    position: relative;
-    overflow: hidden;
-}
-
-.bg-gradient::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 200%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-    0% { left: -100%; }
-    100% { left: 100%; }
-}
-
-/* Status badges enhancement */
-.badge {
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    padding: 0.5em 0.8em;
-}
-
-/* Responsive news grid */
-@media (max-width: 768px) {
-    .news-preview-card {
-        margin-bottom: 1.5rem;
-    }
-
-    .dashboard-hero {
-        padding: 2rem !important;
-    }
-
-    .news-image-header {
-        height: 140px !important;
-    }
-}
-
-/* Enterprise News Page Styling */
-.sticky-top {
-    position: sticky;
-    top: 20px;
-    z-index: 100;
-}
-
-.form-control:focus {
-    background-color: var(--bs-secondary) !important;
-    color: white !important;
-    border-color: var(--bs-primary);
-    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
-}
-
-.page-link {
-    transition: all 0.3s ease;
-}
-
-.page-link:hover {
-    background-color: var(--bs-primary) !important;
-    border-color: var(--bs-primary) !important;
-}
-
-/* News article hover effects */
-.card:hover {
-    transform: translateY(-2px);
-    transition: transform 0.3s ease;
-}
-
-/* Badge styling */
-.badge {
-    font-weight: 500;
-    padding: 0.4em 0.8em;
-    letter-spacing: 0.3px;
-}
-
-/* Enhanced link styling */
-.card-body a.text-white:hover {
-    color: var(--bs-warning) !important;
-    transition: color 0.3s ease;
-}
-
-/* Status indicator animations */
-.bg-success.rounded-circle {
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
 }

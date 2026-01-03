@@ -44,7 +44,7 @@ class TelegramClient:
         self.call_count += 1
         self.last_call_time = time.time()
     
-    def create_invite_link(self, entity_name: str) -> Tuple[bool, Optional[Dict]]:
+    def create_invite_link(self, entity_name: str) -> Tuple[bool, Dict]:
         """Create a single-use invite link for the target group"""
         self._enforce_rate_limit()
         
@@ -133,10 +133,9 @@ class TelegramClient:
         try:
             # Get bot info in the target chat
             url = f"{self.api_base}/getChatMember"
-            bot_token = TELEGRAM_BOT_TOKEN or ""
             data = {
                 'chat_id': TARGET_GROUP_CHAT_ID,
-                'user_id': bot_token.split(':')[0]  # Bot ID from token
+                'user_id': TELEGRAM_BOT_TOKEN.split(':')[0]  # Bot ID from token
             }
             
             response = requests.post(url, data=data, timeout=30)
@@ -171,7 +170,7 @@ class TelegramClient:
             return self.send_message(ADMIN_TELEGRAM_ID, alert_message)
         return False
     
-    def get_chat_info(self, chat_id: Optional[str] = None) -> Optional[Dict]:
+    def get_chat_info(self, chat_id: str = None) -> Optional[Dict]:
         """Get information about a chat"""
         target_chat = chat_id or TARGET_GROUP_CHAT_ID
         if not target_chat:

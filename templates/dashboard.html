@@ -1,207 +1,150 @@
 {% extends "base.html" %}
 
-{% block title %}Intelligence Dashboard - GEM Cybersecurity Assist{% endblock %}
+{% block title %}Dashboard - RSS Curation System{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4 bg-slate-950 text-white min-vh-100">
-    <!-- Top Stats Row -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card bg-slate-900 border-slate-800 p-4 rounded-4 shadow-sm h-100">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div class="p-2 bg-primary/10 rounded">
-                        <i data-feather="activity" class="text-primary"></i>
-                    </div>
-                    <span class="badge bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">LIVE</span>
-                </div>
-                <h3 class="fw-bold mb-1" id="totalItemsCount">{{ items|length }}</h3>
-                <p class="text-slate-500 small mb-0">Total Intelligence Items</p>
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2">
+                <i data-feather="layout" class="me-2"></i>
+                Content Dashboard
+            </h1>
+            <div class="d-flex gap-2">
+                <span class="badge bg-secondary">{{ items|length }} items</span>
+                <span class="badge bg-warning">{{ items|selectattr("approved", "equalto", 0)|list|length }} pending</span>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-slate-900 border-slate-800 p-4 rounded-4 shadow-sm h-100">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div class="p-2 bg-warning/10 rounded">
-                        <i data-feather="clock" class="text-warning"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold mb-1" id="pendingReviewCount">{{ items|selectattr("approved", "equalto", 0)|list|length }}</h3>
-                <p class="text-slate-500 small mb-0">Awaiting Curation</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-slate-900 border-slate-800 p-4 rounded-4 shadow-sm h-100">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div class="p-2 bg-success/10 rounded">
-                        <i data-feather="send" class="text-success"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold mb-1" id="broadcastedCount">{{ items|selectattr("approved", "equalto", 1)|list|length }}</h3>
-                <p class="text-slate-500 small mb-0">Broadcasts Sent</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-slate-900 border-slate-800 p-4 rounded-4 shadow-sm h-100">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div class="p-2 bg-info/10 rounded">
-                        <i data-feather="rss" class="text-info"></i>
-                    </div>
-                </div>
-                <h3 class="fw-bold mb-1" id="activeFeedsCount">{{ feed_count }}</h3>
-                <p class="text-slate-500 small mb-0">Active Intelligence Feeds</p>
-            </div>
-        </div>
-    </div>
 
-    <div class="row g-4">
-        <!-- Main Feed Column -->
-        <div class="col-lg-8">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold mb-0 d-flex align-items-center gap-2">
-                    <i data-feather="shield" class="text-primary"></i> Review Queue
-                </h4>
-                <div class="btn-group btn-group-sm">
-                    <button class="btn btn-slate-800 active">All</button>
-                    <button class="btn btn-slate-800">High Priority</button>
-                    <button class="btn btn-slate-800">Critical</button>
-                </div>
+        {% if not items %}
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i data-feather="inbox" size="64" class="text-muted"></i>
             </div>
+            <h3 class="text-muted">No RSS items found</h3>
+            <p class="text-muted mb-4">
+                Start by adding some RSS feeds and refreshing to get content.
+            </p>
+            <div class="d-flex gap-2 justify-content-center">
+                <a href="{{ url_for('manage_feeds') }}" class="btn btn-primary">
+                    <i data-feather="plus" class="me-1"></i>
+                    Add RSS Feeds
+                </a>
+                <form action="{{ url_for('refresh_feeds') }}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-secondary">
+                        <i data-feather="refresh-cw" class="me-1"></i>
+                        Refresh Feeds
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% else %}
 
-            <div class="space-y-4" id="intelligenceFeed">
-                {% for item in items if not item.approved %}
-                <div class="card bg-slate-900 border-slate-800 rounded-4 overflow-hidden mb-4 intelligence-card">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="badge bg-slate-800 text-slate-400 border border-slate-700">
-                                {{ item.feed_source or 'Security Intel' }}
-                            </span>
-                            <span class="text-slate-500 small">{{ item.date }}</span>
-                        </div>
-                        <h5 class="fw-bold mb-2">{{ item.title }}</h5>
-                        <p class="text-slate-400 mb-4 small">{{ item.summary[:200] }}...</p>
-                        
-                        {% if item.ai_suggestion %}
-                        <div class="bg-primary/5 border border-primary/10 rounded-3 p-3 mb-4">
-                            <div class="d-flex align-items-center gap-2 mb-2 text-primary">
-                                <i data-feather="cpu" size="14"></i>
-                                <span class="small fw-bold uppercase">AI ANALYSIS</span>
+        <!-- Items Grid -->
+        <div class="row">
+            {% for item in items %}
+            <div class="col-12 col-xl-6 mb-4">
+                <div class="card h-100 {% if item.approved %}border-success{% endif %}">
+                    <div class="card-header d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title mb-1">
+                                <a href="{{ item.link }}" target="_blank" class="text-decoration-none">
+                                    {{ item.title }}
+                                </a>
+                            </h5>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <small class="badge bg-secondary">{{ item.category }}</small>
+                                {% if item.feed_source %}
+                                <small class="badge bg-info">{{ item.feed_source }}</small>
+                                {% endif %}
+                                {% if item.date %}
+                                <small class="text-muted">{{ item.date[:10] }}</small>
+                                {% endif %}
                             </div>
-                            <p class="text-slate-300 small mb-0">{{ item.ai_suggestion }}</p>
+                        </div>
+                        {% if item.approved %}
+                        <span class="badge bg-success">
+                            <i data-feather="check" size="12"></i>
+                            Sent
+                        </span>
+                        {% else %}
+                        <span class="badge bg-warning">
+                            <i data-feather="clock" size="12"></i>
+                            Pending
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Original Summary -->
+                        {% if item.summary %}
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">
+                                <i data-feather="file-text" class="me-1"></i>
+                                Original Summary
+                            </h6>
+                            <p class="small text-muted">{{ item.summary[:200] }}{% if item.summary|length > 200 %}...{% endif %}</p>
                         </div>
                         {% endif %}
 
+                        <!-- AI Suggestion -->
+                        <div class="ai-suggestion" id="suggestion-{{ item.id }}">
+                            <h6 class="text-primary mb-2">
+                                <i data-feather="zap" class="me-1"></i>
+                                AI Suggestion
+                            </h6>
+                            {% if item.ai_suggestion %}
+                            <div class="alert alert-info mb-3">
+                                <p class="mb-0">{{ item.ai_suggestion }}</p>
+                            </div>
+                            {% else %}
+                            <div class="text-center">
+                                <button class="btn btn-outline-primary btn-sm generate-suggestion" data-item-id="{{ item.id }}">
+                                    <i data-feather="zap" class="me-1"></i>
+                                    Generate AI Suggestion
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if not item.approved %}
+                    <div class="card-footer bg-transparent">
                         <div class="d-flex gap-2">
-                            <form action="{{ url_for('approve_item', item_id=item.id) }}" method="post" class="flex-grow-1">
-                                <button type="submit" class="btn btn-primary w-100 btn-sm">
-                                    <i data-feather="check" class="me-2" size="16"></i> Approve & Broadcast
+                            <form action="{{ url_for('approve', item_id=item.id) }}" method="post" class="flex-grow-1">
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i data-feather="send" class="me-1"></i>
+                                    Approve & Send to Telegram
                                 </button>
                             </form>
-                            <form action="{{ url_for('reject_item', item_id=item.id) }}" method="post">
-                                <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    <i data-feather="trash-2" size="16"></i>
+                            <form action="{{ url_for('reject', item_id=item.id) }}" method="post">
+                                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to reject this item?')">
+                                    <i data-feather="x"></i>
                                 </button>
                             </form>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="text-center py-5">
-                    <div class="mb-3 text-slate-700">
-                        <i data-feather="check-circle" size="64"></i>
-                    </div>
-                    <h5 class="text-slate-500">Review Queue Clear</h5>
-                    <p class="text-slate-600 small">Everything is processed for today.</p>
-                </div>
-                {% endfor %}
             </div>
+            {% endfor %}
         </div>
 
-        <!-- Sidebar Widgets -->
-        <div class="col-lg-4">
-            <!-- System Health -->
-            <div class="card bg-slate-900 border-slate-800 rounded-4 mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-4 uppercase small text-slate-500 tracking-wider">System Health</h6>
-                    <div class="space-y-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="small">Feed Pipeline</div>
-                            <span class="text-emerald-500 small">Healthy</span>
-                        </div>
-                        <div class="progress bg-slate-800" style="height: 4px;">
-                            <div class="progress-bar bg-emerald-500" style="width: 100%"></div>
-                        </div>
-                        
-                        <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
-                            <div class="small">AI Generator</div>
-                            <span class="text-emerald-500 small">Ready</span>
-                        </div>
-                        <div class="progress bg-slate-800" style="height: 4px;">
-                            <div class="progress-bar bg-emerald-500" style="width: 100%"></div>
-                        </div>
+        {% endif %}
+    </div>
+</div>
 
-                        <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
-                            <div class="small">Social API</div>
-                            <span class="text-emerald-500 small">Connected</span>
-                        </div>
-                        <div class="progress bg-slate-800" style="height: 4px;">
-                            <div class="progress-bar bg-emerald-500" style="width: 100%"></div>
-                        </div>
-                    </div>
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
-            </div>
-
-            <!-- Recent Broadcasts -->
-            <div class="card bg-slate-900 border-slate-800 rounded-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-4 uppercase small text-slate-500 tracking-wider">Recent Broadcasts</h6>
-                    <div class="space-y-4">
-                        {% for item in items if item.approved %}
-                        <div class="border-bottom border-slate-800 pb-3 mb-3 last:border-0">
-                            <div class="d-flex gap-3 align-items-start">
-                                <div class="p-2 bg-slate-800 rounded">
-                                    <i data-feather="check-circle" class="text-success" size="14"></i>
-                                </div>
-                                <div>
-                                    <div class="small fw-bold text-slate-300 mb-1">{{ item.title[:50] }}...</div>
-                                    <div class="text-slate-500" style="font-size: 10px;">{{ item.date }}</div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
+                <p class="mb-0">Generating AI suggestion...</p>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .bg-slate-950 { background-color: #020617 !important; }
-    .bg-slate-900 { background-color: #0f172a !important; }
-    .bg-slate-800 { background-color: #1e293b !important; }
-    .border-slate-800 { border-color: #1e293b !important; }
-    .border-slate-700 { border-color: #334155 !important; }
-    .text-slate-400 { color: #94a3b8 !important; }
-    .text-slate-500 { color: #64748b !important; }
-    .text-slate-600 { color: #475569 !important; }
-    .text-slate-700 { color: #334155 !important; }
-    
-    .intelligence-card {
-        transition: transform 0.2s, border-color 0.2s;
-    }
-    .intelligence-card:hover {
-        transform: translateY(-2px);
-        border-color: rgba(59, 130, 246, 0.3) !important;
-    }
-
-    .btn-slate-800 {
-        background-color: #1e293b;
-        color: #94a3b8;
-        border: 1px solid #334155;
-    }
-    .btn-slate-800.active {
-        background-color: #334155;
-        color: #fff;
-    }
-</style>
 {% endblock %}

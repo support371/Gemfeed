@@ -1,15 +1,15 @@
-modules = ["nodejs-20", "python-3.11"]
+modules = ["python-3.11"]
 
 [nix]
 channel = "stable-25_05"
-packages = ["glibcLocales", "openssl", "postgresql"]
+packages = ["openssl", "postgresql"]
 
 [deployment]
 deploymentTarget = "autoscale"
 run = ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
 
 [workflows]
-runButton = "Project"
+runButton = "Run Flask App"
 
 [[workflows.workflow]]
 name = "Project"
@@ -29,9 +29,18 @@ task = "shell.exec"
 args = "gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app"
 waitForPort = 5000
 
+[[workflows.workflow]]
+name = "Run Flask App"
+author = 46920073
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
+
 [[ports]]
 localPort = 5000
 externalPort = 80
 
 [agent]
-integrations = ["python_openai:1.0.0", "styling_replit:1.0.0"]
+integrations = ["python_openai:1.0.0", "styling_replit:1.0.0", "python_gemini:1.0.0"]

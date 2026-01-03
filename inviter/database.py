@@ -1,7 +1,8 @@
 import sqlite3
 import hashlib
+import json
 from datetime import datetime, timedelta
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, Dict, List
 
 class InviteDatabase:
     """Local SQLite database for tracking invites and deduplication"""
@@ -114,7 +115,7 @@ class InviteDatabase:
         
         return contact_hash
     
-    def update_invite_status(self, contact_hash: str, status: str, error_text: Optional[str] = None):
+    def update_invite_status(self, contact_hash: str, status: str, error_text: str = None):
         """Update invite status"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -135,14 +136,12 @@ class InviteDatabase:
         
         cursor.execute('SELECT * FROM invites WHERE invite_link = ?', (invite_link,))
         row = cursor.fetchone()
+        conn.close()
         
         if row:
             columns = [desc[0] for desc in cursor.description]
-            result = dict(zip(columns, row))
-            conn.close()
-            return result
+            return dict(zip(columns, row))
         
-        conn.close()
         return None
     
     def create_run(self, run_id: str, csv_filename: str, total_contacts: int):
